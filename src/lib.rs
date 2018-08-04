@@ -216,7 +216,7 @@ impl Interpolate for f32 {
 }
 
 // Default implementation of Interpolate::cubic_hermit.
-pub fn cubic_hermite<T>(x: (T, f32), a: (T, f32), b: (T, f32), y: (T, f32), t: f32) -> T
+pub(crate) fn cubic_hermite<T>(x: (T, f32), a: (T, f32), b: (T, f32), y: (T, f32), t: f32) -> T
     where T: Copy + Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Div<f32, Output = T> {
   // time stuff
   let t2 = t * t;
@@ -233,7 +233,7 @@ pub fn cubic_hermite<T>(x: (T, f32), a: (T, f32), b: (T, f32), y: (T, f32), t: f
 
 // Normalize a time ([0;1]) given two control points.
 #[inline(always)]
-pub fn normalize_time<T>(t: f32, cp: &Key<T>, cp1: &Key<T>) -> f32 {
+pub(crate) fn normalize_time<T>(t: f32, cp: &Key<T>, cp1: &Key<T>) -> f32 {
   assert!(cp1.t != cp.t);
 
   (t - cp.t) / (cp1.t - cp.t)
