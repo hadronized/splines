@@ -36,7 +36,7 @@ use std::ops::{Add, Div, Mul, Sub};
 /// determine how to interpolate values on the segment defined by this key and the next one.
 #[derive(Copy, Clone, Debug)]
 pub struct Key<T> {
-  /// f32 at which the `Key` should be reached.
+  /// f32 at which the [`Key`] should be reached.
   pub t: f32,
   /// Actual value.
   pub value: T,
@@ -58,12 +58,13 @@ impl<T> Key<T> {
 /// Interpolation mode.
 #[derive(Copy, Clone, Debug)]
 pub enum Interpolation {
-  /// Hold a `Key` until the time passes the normalized step threshold, in which case the next
+  /// Hold a [`Key`] until the time passes the normalized step threshold, in which case the next
   /// key is used.
   ///
   /// *Note: if you set the threshold to `0.5`, the first key will be used until the time is half
   /// between the two keys; the second key will be in used afterwards. If you set it to `1.0`, the
-  /// first key will be kept until the next key.*
+  /// first key will be kept until the next key. Set it to `0.` and the first key will never be
+  /// used.*
   Step(f32),
   /// Linear interpolation between a key and the next one.
   Linear,
