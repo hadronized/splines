@@ -160,12 +160,12 @@ impl<T> Spline<T> {
 }
 
 /// Iterator over spline keys.
-pub struct SplineIterator<'a, T> where T: 'a {
+pub struct Iter<'a, T> where T: 'a {
   anim_param: &'a Spline<T>,
   i: usize
 }
 
-impl<'a, T> Iterator for SplineIterator<'a, T> {
+impl<'a, T> Iterator for Iter<'a, T> {
   type Item = &'a Key<T>;
 
   fn next(&mut self) -> Option<Self::Item> {
@@ -181,10 +181,10 @@ impl<'a, T> Iterator for SplineIterator<'a, T> {
 
 impl<'a, T> IntoIterator for &'a Spline<T> {
   type Item = &'a Key<T>;
-  type IntoIter = SplineIterator<'a, T>;
+  type IntoIter = Iter<'a, T>;
 
   fn into_iter(self) -> Self::IntoIter {
-    SplineIterator {
+    Iter {
       anim_param: self,
       i: 0
     }
