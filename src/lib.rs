@@ -1,10 +1,10 @@
-//! Spline interpolation made easy.
+//! # Spline interpolation made easy.
 //!
 //! This crate exposes splines for which each sections can be interpolated independently of each
 //! other – i.e. it’s possible to interpolate with a linear interpolator on one section and then
-//! switch to a cube Hermite interpolatior for the next section.
+//! switch to a cubic Hermite interpolator for the next section.
 //!
-//! Most of the library consists of three types:
+//! Most of the crate consists of three types:
 //!
 //!   - [`Key`], which represents the control points by which the spline must pass.
 //!   - [`Interpolation`], the type of possible interpolation for each segment.
@@ -15,15 +15,38 @@
 //! new control point, a new section is created. Each section is assigned an interpolation mode that
 //! is picked from its lower control point.
 //!
+//! # Quickly create splines
+//!
 //! ```
 //! use splines::{Interpolation, Key, Spline};
 //!
 //! let start = Key::new(0., 0., Interpolation::Linear);
 //! let end = Key::new(1., 10., Interpolation::Linear);
 //! let spline = Spline::from_keys(vec![start, end]);
+//! ```
 //!
+//! You will notice that we used `Interpolation::Linear` for both the keys. The first key `start`’s
+//! interpolation will be used for the whole segment defined by those two keys. The `end`’s
+//! interpolation won’t be used. You can in theory use any [`Interpolation`] you want for the last
+//! key.
+//!
+//! # Interpolate values
+//!
+//! The whole purpose of splines is to interpolate discrete values to yield continuous ones. This is
+//! usually done with the `Spline::sample` method. This method expects the interpolation parameter
+//! (often, this will be the time of your simulation) as argument and will yield an interpolated
+//! value.
+//!
+//! If you try to sample in out-of-bounds interpolation parameter, you’ll get no value.
+//!
+//! ```
+//! # use splines::{Interpolation, Key, Spline};
+//! # let start = Key::new(0., 0., Interpolation::Linear);
+//! # let end = Key::new(1., 10., Interpolation::Linear);
+//! # let spline = Spline::from_keys(vec![start, end]);
 //! assert_eq!(spline.sample(0.), Some(0.));
 //! assert_eq!(spline.sample(1.), Some(10.));
+//! assert_eq!(spline.sample(1.1), None);
 //! ```
 
 use std::cmp::Ordering;
@@ -109,15 +132,6 @@ impl<T> Spline<T> {
   /// near the beginning of the spline or its end, ensure you have enough keys around to make the
   /// sampling.
   pub fn sample(&self, t: f32) -> Option<T> where T: Interpolate {
-    let first = self.0.first().unwrap();
-    let last = self.0.last().unwrap();
-
-    if t <= first.t {
-      return Some(first.value);
-    } else if t >= last.t {
-      return Some(last.value);
-    }
-
     let keys = &self.0;
     let i = keys.binary_search_by(|key| key.t.partial_cmp(&t).unwrap_or(Ordering::Less)).ok()?;
 
@@ -157,6 +171,29 @@ impl<T> Spline<T> {
         }
       }
     }
+  }
+
+  /// Sample a spline at a given time with clamping.
+  ///
+  /// # Return
+  ///
+  /// If you sample before the first key or after the last one, return the first key or the last
+  /// one, respectively. Otherwise, behave the same way as `Spline::sample`.
+  ///
+  /// # Panic
+  ///
+  /// This function panics if you have no key.
+  pub fn clamped_sample(&self, t: f32) -> T where T: Interpolate {
+    let first = self.0.first().unwrap();
+    let last = self.0.last().unwrap();
+
+    if t <= first.t {
+      return first.value;
+    } else if t >= last.t {
+      return last.value;
+    }
+
+    self.sample(t).unwrap()
   }
 }
 
@@ -234,7 +271,7 @@ pub(crate) fn cubic_hermite<T>(x: (T, f32), a: (T, f32), b: (T, f32), y: (T, f32
 // Normalize a time ([0;1]) given two control points.
 #[inline(always)]
 pub(crate) fn normalize_time<T>(t: f32, cp: &Key<T>, cp1: &Key<T>) -> f32 {
-  assert!(cp1.t != cp.t);
+  assert!(cp1.t != cp.t, "overlapping keys");
 
   (t - cp.t) / (cp1.t - cp.t)
 }
