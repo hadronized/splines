@@ -21,14 +21,14 @@
 //! use splines::{Interpolation, Key, Spline};
 //!
 //! let start = Key::new(0., 0., Interpolation::Linear);
-//! let end = Key::new(1., 10., Interpolation::Linear);
-//! let spline = Spline::from_keys(vec![start, end]);
+//! let end = Key::new(1., 10., Interpolation::default());
+//! let spline = Spline::from_vec(vec![start, end]);
 //! ```
 //!
-//! You will notice that we used `Interpolation::Linear` for both the keys. The first key `start`’s
+//! You will notice that we used `Interpolation::Linear` for the first key. The first key `start`’s
 //! interpolation will be used for the whole segment defined by those two keys. The `end`’s
 //! interpolation won’t be used. You can in theory use any [`Interpolation`] you want for the last
-//! key.
+//! key. We use the default one because we don’t care.
 //!
 //! # Interpolate values
 //!
@@ -43,11 +43,26 @@
 //! # use splines::{Interpolation, Key, Spline};
 //! # let start = Key::new(0., 0., Interpolation::Linear);
 //! # let end = Key::new(1., 10., Interpolation::Linear);
-//! # let spline = Spline::from_keys(vec![start, end]);
+//! # let spline = Spline::from_vec(vec![start, end]);
 //! assert_eq!(spline.sample(0.), Some(0.));
-//! assert_eq!(spline.sample(1.), Some(10.));
+//! assert_eq!(spline.clamped_sample(1.), 10.);
 //! assert_eq!(spline.sample(1.1), None);
 //! ```
+//!
+//! It’s possible that you want to get a value even if you’re out-of-bounds. This is especially
+//! important for simulations / animations. Feel free to use the `Spline::clamped_interpolation` for
+//! that purpose.
+//!
+//! ```
+//! # use splines::{Interpolation, Key, Spline};
+//! # let start = Key::new(0., 0., Interpolation::Linear);
+//! # let end = Key::new(1., 10., Interpolation::Linear);
+//! # let spline = Spline::from_vec(vec![start, end]);
+//! assert_eq!(spline.clamped_sample(-0.9), 0.); // clamped to the first key
+//! assert_eq!(spline.clamped_sample(1.1), 10.); // clamped to the last key
+//! ```
+//!
+//! Feel free to have a look at the rest of the documentation for advanced usage.
 
 use std::cmp::Ordering;
 use std::f32::consts;
@@ -55,13 +70,14 @@ use std::ops::{Add, Div, Mul, Sub};
 
 /// A spline control point.
 ///
-/// This type associates a value at a given time. It also contains an interpolation object used to
-/// determine how to interpolate values on the segment defined by this key and the next one.
+/// This type associates a value at a given interpolation parameter value. It also contains an
+/// interpolation hint used to determine how to interpolate values on the segment defined by this
+/// key and the next one – if existing.
 #[derive(Copy, Clone, Debug)]
 pub struct Key<T> {
-  /// f32 at which the [`Key`] should be reached.
+  /// Interpolation parameter at which the [`Key`] should be reached.
   pub t: f32,
-  /// Actual value.
+  /// Held value.
   pub value: T,
   /// Interpolation mode.
   pub interpolation: Interpolation
@@ -109,12 +125,23 @@ impl Default for Interpolation {
 pub struct Spline<T>(Vec<Key<T>>);
 
 impl<T> Spline<T> {
-  /// Create a new spline out of keys. The keys don’t have to be sorted because they’re sorted by
-  /// this function.
-  pub fn from_keys(mut keys: Vec<Key<T>>) -> Self {
+  /// Create a new spline out of keys. The keys don’t have to be sorted even though it’s recommended
+  /// to provide ascending sorted ones (for performance purposes).
+  pub fn from_vec(mut keys: Vec<Key<T>>) -> Self {
     keys.sort_by(|k0, k1| k0.t.partial_cmp(&k1.t).unwrap_or(Ordering::Less));
 
     Spline(keys)
+  }
+
+  /// Create a new spline by consuming an `Iterater<Item = Key<T>>`. They keys don’t have to be
+  /// sorted.
+  ///
+  /// # Note on iterators
+  ///
+  /// It’s valid to use any iterator that implements `Iterator<Item = Key<T>>`. However, you should
+  /// use `Spline::from_vec` if you are passing a `Vec<_>`. This will remove dynamic allocations.
+  pub fn from_iter<I>(iter: I) -> Self where I: Iterator<Item = Key<T>> {
+    Self::from_vec(iter.collect())
   }
 
   /// Retrieve the keys of a spline.
@@ -123,6 +150,11 @@ impl<T> Spline<T> {
   }
 
   /// Sample a spline at a given time.
+  ///
+  /// The current implementation, based on immutability, cannot perform in constant time. This means
+  /// that sampling’s processing complexity is currently *O(log n)*. It’s possible to achieve *O(1)*
+  /// performance by using a slightly different spline type. If you are interested by this feature,
+  /// an implementation for a dedicated type is foreseen yet not started yet.
   ///
   /// # Return
   ///
@@ -133,8 +165,7 @@ impl<T> Spline<T> {
   /// sampling.
   pub fn sample(&self, t: f32) -> Option<T> where T: Interpolate {
     let keys = &self.0;
-    let i = keys.binary_search_by(|key| key.t.partial_cmp(&t).unwrap_or(Ordering::Less)).ok()?;
-
+    let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
 
     match cp0.interpolation {
@@ -198,6 +229,8 @@ impl<T> Spline<T> {
 }
 
 /// Iterator over spline keys.
+///
+/// This iterator type assures you to iterate over sorted keys.
 pub struct Iter<'a, T> where T: 'a {
   anim_param: &'a Spline<T>,
   i: usize
@@ -274,4 +307,37 @@ pub(crate) fn normalize_time<T>(t: f32, cp: &Key<T>, cp1: &Key<T>) -> f32 {
   assert!(cp1.t != cp.t, "overlapping keys");
 
   (t - cp.t) / (cp1.t - cp.t)
+}
+
+// Find the lower control point corresponding to a given time.
+fn search_lower_cp<T>(cps: &[Key<T>], t: f32) -> Option<usize> {
+  let mut i = 0;
+  let len = cps.len();
+
+  if len < 2 {
+    return None;
+  }
+
+  loop {
+    let cp = &cps[i];
+    let cp1 = &cps[i+1];
+
+    if t >= cp1.t {
+      if i >= len - 2 {
+        return None;
+      }
+
+      i += 1;
+    } else if t < cp.t {
+      if i == 0 {
+        return None;
+      }
+
+      i -= 1;
+    } else {
+      break; // found
+    }
+  }
+
+  Some(i)
 }
