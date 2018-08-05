@@ -18,3 +18,4 @@ is-it-maintained-open-issues = { repository = "phaazon/spline" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
+cgmath = "0.16"

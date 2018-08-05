@@ -64,6 +64,9 @@
 //!
 //! Feel free to have a look at the rest of the documentation for advanced usage.
 
+extern crate cgmath;
+
+use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 use std::cmp::Ordering;
 use std::f32::consts;
 use std::ops::{Add, Div, Mul, Sub};
@@ -282,6 +285,42 @@ impl Interpolate for f32 {
 
   fn cubic_hermite(x: (Self, f32), a: (Self, f32), b: (Self, f32), y: (Self, f32), t: f32) -> Self {
     cubic_hermite(x, a, b, y, t)
+  }
+}
+
+impl Interpolate for Vector2<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    a.lerp(b, t)
+  }
+
+  fn cubic_hermite(x: (Self, f32), a: (Self, f32), b: (Self, f32), y: (Self, f32), t: f32) -> Self {
+    cubic_hermite(x, a, b, y, t)
+  }
+}
+
+impl Interpolate for Vector3<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    a.lerp(b, t)
+  }
+
+  fn cubic_hermite(x: (Self, f32), a: (Self, f32), b: (Self, f32), y: (Self, f32), t: f32) -> Self {
+    cubic_hermite(x, a, b, y, t)
+  }
+}
+
+impl Interpolate for Vector4<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    a.lerp(b, t)
+  }
+
+  fn cubic_hermite(x: (Self, f32), a: (Self, f32), b: (Self, f32), y: (Self, f32), t: f32) -> Self {
+    cubic_hermite(x, a, b, y, t)
+  }
+}
+
+impl Interpolate for Quaternion<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    a.nlerp(b, t)
   }
 }
 
