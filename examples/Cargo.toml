@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+  "01-hello-world"
+]
+
+[patch.crates-io]
+splines = { path = ".." }
