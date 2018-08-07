@@ -17,5 +17,17 @@ is-it-maintained-issue-resolution = { repository = "phaazon/splines" }
 is-it-maintained-open-issues = { repository = "phaazon/splines" }
 maintenance = { status = "actively-developed" }
 
+[features]
+default = []
+serialization = ["serde", "serde_derive"]
+
 [dependencies]
 cgmath = "0.16"
+
+[dependencies.serde]
+version = "1"
+optional = true
+
+[dependencies.serde_derive]
+version = "1"
+optional = true
