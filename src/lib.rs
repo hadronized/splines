@@ -61,8 +61,24 @@
 //! assert_eq!(spline.clamped_sample(-0.9), 0.); // clamped to the first key
 //! assert_eq!(spline.clamped_sample(1.1), 10.); // clamped to the last key
 //! ```
+//! # Features and customization
 //!
-//! Feel free to have a look at the rest of the documentation for advanced usage.
+//! This crate was written with features baked in and hidden behind feature-gates. The idea is that
+//! the default configuration (i.e. you just add `"spline = …"` to your `Cargo.toml`) will always
+//! give you the minimal, core and raw concepts of what splines, keys / knots and interpolation
+//! modes are. However, you might want more. Instead of letting other people do the extra work to
+//! add implementations for very famous and useful traits – and do it in less efficient way, because
+//! they wouldn’t have access to the internals of this crate, it’s possible to enable features in an
+//! ad hoc way.
+//!
+//! This mechanism is not final and this is currently an experiment to see how people like it or
+//! not. It’s especially important to see how it copes with the documentation.
+//!
+//! So here’s a list of currently supported features and how to enable them:
+//!
+//!   - **Serialization / deserialization**
+//!     + This feature implements both the `Serialize` and `Deserialize` traits from `serde`.
+//!     + Enable with the feature `"serialization"`.
 
 extern crate cgmath;
 
