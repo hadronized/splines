@@ -66,6 +66,9 @@
 
 extern crate cgmath;
 
+#[cfg(feature = "serialization")] extern crate serde;
+#[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
+
 use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 use std::cmp::Ordering;
 use std::f32::consts;
@@ -77,6 +80,8 @@ use std::ops::{Add, Div, Mul, Sub};
 /// interpolation hint used to determine how to interpolate values on the segment defined by this
 /// key and the next one – if existing.
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
 pub struct Key<T> {
   /// Interpolation parameter at which the [`Key`] should be reached.
   pub t: f32,
@@ -99,6 +104,8 @@ impl<T> Key<T> {
 
 /// Interpolation mode.
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
 pub enum Interpolation {
   /// Hold a [`Key`] until the time passes the normalized step threshold, in which case the next
   /// key is used.
@@ -125,6 +132,7 @@ impl Default for Interpolation {
 
 /// Spline curve used to provide interpolation between control points (keys).
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
 pub struct Spline<T>(Vec<Key<T>>);
 
 impl<T> Spline<T> {

@@ -12,6 +12,10 @@ os:
 script:
   - rustc --version
   - cargo --version
+  - echo "Testing default crate configuration"
   - cargo build --verbose
   - cargo test --verbose
   - cd examples && cargo check --verbose
+  - echo "Testing feature serialization"
+  - cargo build --verbose --features serialization
+  - cargo test --verbose --features serialization
