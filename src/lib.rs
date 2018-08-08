@@ -76,9 +76,20 @@
 //!
 //! So here’s a list of currently supported features and how to enable them:
 //!
-//!   - **Serialization / deserialization**
+//!   - **Serialization / deserialization.**
 //!     + This feature implements both the `Serialize` and `Deserialize` traits from `serde`.
-//!     + Enable with the feature `"serialization"`.
+//!     + Enable with the `"serialization"` feature.
+//!   - **Standard library / no stdandard library**
+//!     + It’s possible to compile against the standard library or go on your own without it.
+//!     + Compiling with the standard library is enabled by default.
+//!     + Use `defaut-features = []` in your `Cargo.toml` to disable.
+//!     + Enable explicitly with the `"std"` feataure.
+
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), feature(alloc))]
+
+// on no_std, we also need the alloc crate for Vec
+#[cfg(not(feature = "std"))] extern crate alloc;
 
 extern crate cgmath;
 
@@ -86,9 +97,15 @@ extern crate cgmath;
 #[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
 
 use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
-use std::cmp::Ordering;
-use std::f32::consts;
-use std::ops::{Add, Div, Mul, Sub};
+
+#[cfg(feature = "std")] use std::cmp::Ordering;
+#[cfg(feature = "std")] use std::f32::consts;
+#[cfg(feature = "std")] use std::ops::{Add, Div, Mul, Sub};
+
+#[cfg(not(feature = "std"))] use alloc::vec::Vec;
+#[cfg(not(feature = "std"))] use core::cmp::Ordering;
+#[cfg(not(feature = "std"))] use core::f32::consts;
+#[cfg(not(feature = "std"))] use core::ops::{Add, Div, Mul, Sub};
 
 /// A spline control point.
 ///
