@@ -87,16 +87,17 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(feature = "std"), feature(alloc))]
+#![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 
 // on no_std, we also need the alloc crate for Vec
 #[cfg(not(feature = "std"))] extern crate alloc;
 
-extern crate cgmath;
+#[cfg(feature = "impl-cgmath")] extern crate cgmath;
 
 #[cfg(feature = "serialization")] extern crate serde;
 #[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
 
-use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
+#[cfg(feature = "impl-cgmath")] use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;
@@ -227,7 +228,18 @@ impl<T> Spline<T> {
       Interpolation::Cosine => {
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
-        let cos_nt = (1. - f32::cos(nt * consts::PI)) * 0.5;
+        let cos_nt = {
+          #[cfg(feature = "std")]
+          {
+            (1. - f32::cos(nt * consts::PI)) * 0.5
+          }
+
+          #[cfg(not(feature = "std"))]
+          {
+            use core::intrinsics::cosf32;
+            unsafe { (1. - cosf32(nt * consts::PI)) * 0.5 }
+          }
+        };
 
         Some(Interpolate::lerp(cp0.value, cp1.value, cos_nt))
       },
@@ -329,6 +341,7 @@ impl Interpolate for f32 {
   }
 }
 
+#[cfg(feature = "impl-cgmath")]
 impl Interpolate for Vector2<f32> {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
     a.lerp(b, t)
@@ -339,6 +352,7 @@ impl Interpolate for Vector2<f32> {
   }
 }
 
+#[cfg(feature = "impl-cgmath")]
 impl Interpolate for Vector3<f32> {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
     a.lerp(b, t)
@@ -349,6 +363,7 @@ impl Interpolate for Vector3<f32> {
   }
 }
 
+#[cfg(feature = "impl-cgmath")]
 impl Interpolate for Vector4<f32> {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
     a.lerp(b, t)
@@ -359,6 +374,7 @@ impl Interpolate for Vector4<f32> {
   }
 }
 
+#[cfg(feature = "impl-cgmath")]
 impl Interpolate for Quaternion<f32> {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
     a.nlerp(b, t)

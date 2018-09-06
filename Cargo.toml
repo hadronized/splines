@@ -18,12 +18,14 @@ is-it-maintained-open-issues = { repository = "phaazon/splines" }
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["std"]
+default = ["std", "impl-cgmath"]
 serialization = ["serde", "serde_derive"]
 std = []
+impl-cgmath = ["cgmath"]
 
-[dependencies]
-cgmath = "0.16"
+[dependencies.cgmath]
+version = "0.16"
+optional = true
 
 [dependencies.serde]
 version = "1"
