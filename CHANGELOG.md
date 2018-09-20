@@ -1,3 +1,9 @@
+# 0.2.1
+
+> Thu 20th September 2018
+
+  - Enhance the features documentation.
+
 # 0.2
 
 > Thu 6th September 2018
