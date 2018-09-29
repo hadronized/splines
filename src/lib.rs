@@ -105,7 +105,7 @@
 
 #[cfg(feature = "impl-cgmath")] use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 
-#[cfg(feature = "impl-nalgera")] use nalgera::{Point, Vector};
+#[cfg(feature = "impl-nalgebra")] use nalgera::{Point, Vector};
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;
