@@ -22,6 +22,11 @@ default = ["std", "impl-cgmath"]
 serialization = ["serde", "serde_derive"]
 std = []
 impl-cgmath = ["cgmath"]
+impl-nalgebra = ["nalgebra"]
+
+[dependencies.nalgebra]
+version = "0.16"
+optional = true
 
 [dependencies.cgmath]
 version = "0.16"

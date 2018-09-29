@@ -98,10 +98,14 @@
 
 #[cfg(feature = "impl-cgmath")] extern crate cgmath;
 
+#[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
+
 #[cfg(feature = "serialization")] extern crate serde;
 #[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
 
 #[cfg(feature = "impl-cgmath")] use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
+
+#[cfg(feature = "impl-nalgera")] use nalgera::{Point, Vector};
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;
@@ -383,6 +387,20 @@ impl Interpolate for Quaternion<f32> {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
     a.nlerp(b, t)
   }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl<T : Interpolate > Interpolate for Point<T> {
+    fn lerp(a: Self, b: Self, t: f32) -> Self {
+        a.lerp(b, t)
+    }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl<T : Interpolate > Interpolate for Vector<T> {
+    fn lerp(a: Self, b: Self, t: f32) -> Self {
+        a.lerp(b, t)
+    }
 }
 
 // Default implementation of Interpolate::cubic_hermit.
