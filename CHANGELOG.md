@@ -1,4 +1,11 @@
-# 0.2.1
+## 0.2.2
+
+> Sun 30th September 2018
+
+  - Bump version numbers (`splines-0.2`) in examples.
+  - Fix several typos in the documentation.
+
+## 0.2.1
 
 > Thu 20th September 2018
 
