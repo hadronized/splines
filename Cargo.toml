@@ -22,10 +22,14 @@ default = ["std", "impl-cgmath"]
 serialization = ["serde", "serde_derive"]
 std = []
 impl-cgmath = ["cgmath"]
-impl-nalgebra = ["nalgebra"]
+impl-nalgebra = ["nalgebra", "generic-array"]
 
 [dependencies.nalgebra]
 version = "0.14"
+optional = true
+
+[dependencies.generic-array]
+version = "^0.8"
 optional = true
 
 [dependencies.cgmath]
