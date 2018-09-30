@@ -110,11 +110,8 @@
 #[cfg(feature = "impl-cgmath")] use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 
 #[cfg(feature = "impl-nalgebra")] use nalgebra as na;
-#[cfg(feature = "impl-nalgebra")] use nalgebra::Matrix;
 #[cfg(feature = "impl-nalgebra")] use nalgebra::core::allocator::Allocator;
 #[cfg(feature = "impl-nalgebra")] use nalgebra::core::{DimName, DefaultAllocator, Scalar};
-#[cfg(feature = "impl-nalgebra")] use nalgebra::storage::Storage;
-#[cfg(feature = "impl-nalgebra")] use generic_array::ArrayLength;
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;
@@ -404,12 +401,11 @@ impl<N : Scalar, D : DimName> Interpolate for na::Point<N, D>
         <DefaultAllocator as Allocator<N, D>>::Buffer: Copy,
         N : Interpolate,
 {
-    fn lerp(a: Self, b: Self, t: f32) -> Self {
-        let lerp = |c1 : N, c2 : N| { Interpolate::lerp(c1, c2, t) };
-        let coords = Matrix::zip_map(&a.coords, &b.coords, lerp);
-        na::Point::from_coordinates(coords)
-
-    }
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    let lerp = |c1 : N, c2 : N| { Interpolate::lerp(c1, c2, t) };
+    let coords = na::Matrix::zip_map(&a.coords, &b.coords, lerp);
+    na::Point::from_coordinates(coords)
+  }
 }
 
 #[cfg(feature = "impl-nalgebra")]
@@ -421,11 +417,11 @@ impl<R, C> Interpolate for na::Matrix<f32, R, C, <DefaultAllocator as Allocator<
         <<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output : generic_array::ArrayLength<f32>,
         <<<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output as generic_array::ArrayLength<f32>>::ArrayType : Copy,
 {
-    fn lerp(a: Self, b: Self, t: f32) -> Self 
-    {
-        let lerp = |c1 : f32, c2 : f32| Interpolate::lerp(c1, c2, t);
-        Matrix::zip_map(&a, &b, lerp)
-    }
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    let lerp = |c1 : f32, c2 : f32| Interpolate::lerp(c1, c2, t);
+    na::Matrix::zip_map(&a, &b, lerp)
+  }
 }
 
 // Default implementation of Interpolate::cubic_hermit.
