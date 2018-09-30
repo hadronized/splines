@@ -102,6 +102,7 @@
 #[cfg(feature = "impl-cgmath")] extern crate cgmath;
 
 #[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
+#[cfg(feature = "impl-nalgebra")] extern crate generic_array;
 
 #[cfg(feature = "serialization")] extern crate serde;
 #[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
@@ -113,6 +114,7 @@
 #[cfg(feature = "impl-nalgebra")] use nalgebra::core::allocator::Allocator;
 #[cfg(feature = "impl-nalgebra")] use nalgebra::core::{DimName, DefaultAllocator, Scalar};
 #[cfg(feature = "impl-nalgebra")] use nalgebra::storage::Storage;
+#[cfg(feature = "impl-nalgebra")] use generic_array::ArrayLength;
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;
@@ -406,22 +408,22 @@ impl<N : Scalar, D : DimName> Interpolate for na::Point<N, D>
         let lerp = |c1 : N, c2 : N| { Interpolate::lerp(c1, c2, t) };
         let coords = Matrix::zip_map(&a.coords, &b.coords, lerp);
         na::Point::from_coordinates(coords)
+
     }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl<N, R, C> Interpolate for na::Matrix<N, R, C, <DefaultAllocator as Allocator<N, R, C>>::Buffer>
-  where N : Interpolate,
-        N : Scalar,
-        R : DimName,
+impl<R, C> Interpolate for na::Matrix<f32, R, C, <DefaultAllocator as Allocator<f32, R, C>>::Buffer>
+  where R : DimName,
         C : DimName,
         <R as na::DimName>::Value : Mul<<C as na::DimName>::Value>,
         <C as na::DimName>::Value : Mul<<R as na::DimName>::Value>,
-        <<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output : generic_array::ArrayLengh<N>
+        <<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output : generic_array::ArrayLength<f32>,
+        <<<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output as generic_array::ArrayLength<f32>>::ArrayType : Copy,
 {
     fn lerp(a: Self, b: Self, t: f32) -> Self 
     {
-        let lerp = |c1 : N, c2 : N| Interpolate::lerp(c1, c2, t);
+        let lerp = |c1 : f32, c2 : f32| Interpolate::lerp(c1, c2, t);
         Matrix::zip_map(&a, &b, lerp)
     }
 }
