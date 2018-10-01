@@ -409,18 +409,56 @@ impl<N : Scalar, D : DimName> Interpolate for na::Point<N, D>
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl<R, C> Interpolate for na::Matrix<f32, R, C, <DefaultAllocator as Allocator<f32, R, C>>::Buffer>
-  where R : DimName,
-        C : DimName,
-        <R as na::DimName>::Value : Mul<<C as na::DimName>::Value>,
-        <C as na::DimName>::Value : Mul<<R as na::DimName>::Value>,
-        <<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output : generic_array::ArrayLength<f32>,
-        <<<R as na::DimName>::Value as Mul<<C as na::DimName>::Value>>::Output as generic_array::ArrayLength<f32>>::ArrayType : Copy,
+impl Interpolate for na::Vector1<f32>
 {
   fn lerp(a: Self, b: Self, t: f32) -> Self 
   {
-    let lerp = |c1 : f32, c2 : f32| Interpolate::lerp(c1, c2, t);
-    na::Matrix::zip_map(&a, &b, lerp)
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+  }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl Interpolate for na::Vector2<f32>
+{
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+  }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl Interpolate for na::Vector3<f32>
+{
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+  }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl Interpolate for na::Vector4<f32>
+{
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+  }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl Interpolate for na::Vector5<f32>
+{
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+  }
+}
+
+#[cfg(feature = "impl-nalgebra")]
+impl Interpolate for na::Vector6<f32>
+{
+  fn lerp(a: Self, b: Self, t: f32) -> Self 
+  {
+    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
