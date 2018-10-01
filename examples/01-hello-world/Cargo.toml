@@ -1,7 +1,7 @@
 [package]
 name = "hello-world"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 
 [dependencies]
-splines = "0.1"
+splines = "0.2"
