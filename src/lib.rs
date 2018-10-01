@@ -102,7 +102,6 @@
 #[cfg(feature = "impl-cgmath")] extern crate cgmath;
 
 #[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
-#[cfg(feature = "impl-nalgebra")] extern crate generic_array;
 
 #[cfg(feature = "serialization")] extern crate serde;
 #[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
