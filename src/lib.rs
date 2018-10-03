@@ -90,7 +90,7 @@
 //!     + It’s possible to compile against the standard library or go on your own without it.
 //!     + Compiling with the standard library is enabled by default.
 //!     + Use `default-features = []` in your `Cargo.toml` to disable.
-//!     + Enable explicitly with the `"std"` feataure.
+//!     + Enable explicitly with the `"std"` feature.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(feature = "std"), feature(alloc))]
