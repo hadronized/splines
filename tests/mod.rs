@@ -1,6 +1,9 @@
 extern crate splines;
+#[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
 
-use splines::{Interpolation, Key, Spline};
+use splines::{Interpolation, Key, Spline, Interpolate};
+#[cfg(feature = "impl-nalgebra")] use nalgebra as na;
+
 
 #[test]
 fn step_interpolation_0() {
@@ -128,3 +131,28 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.sample(10.), Some(2.));
   assert_eq!(spline.clamped_sample(11.), 4.);
 }
+
+#[cfg(feature = "impl-nalgebra")]
+#[test]
+fn nalgebra_point_interpolation() {
+    let start = na::Point2::new(0.0, 0.0);
+    let mid   = na::Point2::new(0.5, 0.5);
+    let end   = na::Point2::new(1.0, 1.0);
+
+    assert_eq!(Interpolate::lerp(start, end, 0.0), start);
+    assert_eq!(Interpolate::lerp(start, end, 1.0), end);
+    assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
+}
+
+#[cfg(feature = "impl-nalgebra")]
+#[test]
+fn nalgebra_vector_interpolation() {
+    let start = na::Vector2::new(0.0, 0.0);
+    let mid   = na::Vector2::new(0.5, 0.5);
+    let end   = na::Vector2::new(1.0, 1.0);
+
+    assert_eq!(Interpolate::lerp(start, end, 0.0), start);
+    assert_eq!(Interpolate::lerp(start, end, 1.0), end);
+    assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
+}
+
