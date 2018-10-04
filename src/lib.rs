@@ -395,69 +395,57 @@ impl Interpolate for Quaternion<f32> {
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl<N : Scalar, D : DimName> Interpolate for na::Point<N, D> 
-  where DefaultAllocator : Allocator<N, D>,
+impl<N: Scalar, D: DimName> Interpolate for na::Point<N, D>
+  where DefaultAllocator: Allocator<N, D>,
         <DefaultAllocator as Allocator<N, D>>::Buffer: Copy,
-        N : Interpolate,
-{
+        N: Interpolate {
   fn lerp(a: Self, b: Self, t: f32) -> Self {
-    let lerp = |c1 : N, c2 : N| { Interpolate::lerp(c1, c2, t) };
-    let coords = na::Matrix::zip_map(&a.coords, &b.coords, lerp);
+    // The 'coords' of a point is just a vector, so we can interpolate component-wise
+    // over these vectors.
+    let coords = na::Vector::zip_map(&a.coords, &b.coords, |c1, c2| Interpolate::lerp(c1, c2, t));
     na::Point::from_coordinates(coords)
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector1<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector1<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector2<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector2<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector3<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector3<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector4<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector4<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector5<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector5<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
 #[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector6<f32>
-{
-  fn lerp(a: Self, b: Self, t: f32) -> Self 
-  {
-    na::Matrix::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+impl Interpolate for na::Vector6<f32> {
+  fn lerp(a: Self, b: Self, t: f32) -> Self {
+    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
   }
 }
 
