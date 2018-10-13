@@ -81,10 +81,10 @@
 //!       types exported by this crate.
 //!     + Enable with the `"serialization"` feature.
 //!   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
-//!     + Adds some usefull implementations of `Interpolate` for some cgmath types.
+//!     + Adds some useful implementations of `Interpolate` for some cgmath types.
 //!     + Enable with the `"impl-cgmath"` feature.
 //!   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
-//!     + Adds some usefull implementations of `Interpolate` for some nalgebra types.
+//!     + Adds some useful implementations of `Interpolate` for some nalgebra types.
 //!     + Enable with the `"impl-nalgebra"` feature.
 //!   - **Standard library / no standard library.**
 //!     + It’s possible to compile against the standard library or go on your own without it.
@@ -109,8 +109,8 @@
 #[cfg(feature = "impl-cgmath")] use cgmath::{InnerSpace, Quaternion, Vector2, Vector3, Vector4};
 
 #[cfg(feature = "impl-nalgebra")] use nalgebra as na;
-#[cfg(feature = "impl-nalgebra")] use nalgebra::core::allocator::Allocator;
 #[cfg(feature = "impl-nalgebra")] use nalgebra::core::{DimName, DefaultAllocator, Scalar};
+#[cfg(feature = "impl-nalgebra")] use nalgebra::core::allocator::Allocator;
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
 #[cfg(feature = "std")] use std::f32::consts;

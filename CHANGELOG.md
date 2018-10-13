@@ -1,3 +1,11 @@
+## 0.2.3
+
+> Sat 13th October 2018
+
+  - Add the `"impl-nalgebra"` feature gate. It gives access to some implementors for the `nalgebra`
+    crate.
+  - Enhance the documentation.
+
 ## 0.2.2
 
 > Sun 30th September 2018
@@ -16,7 +24,8 @@
 > Thu 6th September 2018
 
   - Add the `"std"` feature gate, that can be used to compile with the standard library.
-  - Add the `"impl-cgmath"` in order to make it optional, if wanted, the `cgmath` dependency.
+  - Add the `"impl-cgmath"` feature gate in order to make optional, if wanted, the `cgmath`
+    dependency.
   - Enhance the documentation.
 
 ## 0.1.1
