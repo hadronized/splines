@@ -64,7 +64,7 @@
 //! # Features and customization
 //!
 //! This crate was written with features baked in and hidden behind feature-gates. The idea is that
-//! the default configuration (i.e. you just add `"spline = …"` to your `Cargo.toml`) will always
+//! the default configuration (i.e. you just add `"splines = …"` to your `Cargo.toml`) will always
 //! give you the minimal, core and raw concepts of what splines, keys / knots and interpolation
 //! modes are. However, you might want more. Instead of letting other people do the extra work to
 //! add implementations for very famous and useful traits – and do it in less efficient way, because
