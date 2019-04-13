@@ -11,6 +11,8 @@ repository = "https://github.com/phaazon/splines"
 documentation = "https://docs.rs/splines"
 readme = "README.md"
 
+edition = "2018"
+
 [badges]
 travis-ci = { repository = "phaazon/splines", branch = "master" }
 is-it-maintained-issue-resolution = { repository = "phaazon/splines" }

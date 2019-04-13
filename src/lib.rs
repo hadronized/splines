@@ -61,6 +61,7 @@
 //! assert_eq!(spline.clamped_sample(-0.9), 0.); // clamped to the first key
 //! assert_eq!(spline.clamped_sample(1.1), 10.); // clamped to the last key
 //! ```
+//!
 //! # Features and customization
 //!
 //! This crate was written with features baked in and hidden behind feature-gates. The idea is that
@@ -231,13 +232,15 @@ impl<T> Spline<T> {
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
         Some(if nt < threshold { cp0.value } else { cp1.value })
-      },
+      }
+
       Interpolation::Linear => {
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
 
         Some(Interpolate::lerp(cp0.value, cp1.value, nt))
-      },
+      }
+
       Interpolation::Cosine => {
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
@@ -255,7 +258,8 @@ impl<T> Spline<T> {
         };
 
         Some(Interpolate::lerp(cp0.value, cp1.value, cos_nt))
-      },
+      }
+
       Interpolation::CatmullRom => {
         // We need at least four points for Catmull Rom; ensure we have them, otherwise, return
         // None.
