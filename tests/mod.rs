@@ -18,7 +18,7 @@ fn step_interpolation_0() {
   assert_eq!(spline.sample(0.5), Some(10.));
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
-  assert_eq!(spline.clamped_sample(1.), 10.);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
 }
 
 #[test]
@@ -33,7 +33,7 @@ fn step_interpolation_0_5() {
   assert_eq!(spline.sample(0.5), Some(10.));
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
-  assert_eq!(spline.clamped_sample(1.), 10.);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
 }
 
 #[test]
@@ -48,7 +48,7 @@ fn step_interpolation_0_75() {
   assert_eq!(spline.sample(0.5), Some(0.));
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
-  assert_eq!(spline.clamped_sample(1.), 10.);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
 }
 
 #[test]
@@ -63,7 +63,7 @@ fn step_interpolation_1() {
   assert_eq!(spline.sample(0.5), Some(0.));
   assert_eq!(spline.sample(0.9), Some(0.));
   assert_eq!(spline.sample(1.), None);
-  assert_eq!(spline.clamped_sample(1.), 10.);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn linear_interpolation() {
   assert_eq!(spline.sample(0.5), Some(5.));
   assert_eq!(spline.sample(0.9), Some(9.));
   assert_eq!(spline.sample(1.), None);
-  assert_eq!(spline.clamped_sample(1.), 10.);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
 }
 
 #[test]
@@ -103,7 +103,7 @@ fn linear_interpolation_several_keys() {
   assert_eq!(spline.sample(3.), Some(1.));
   assert_eq!(spline.sample(6.5), Some(1.5));
   assert_eq!(spline.sample(10.), Some(2.));
-  assert_eq!(spline.clamped_sample(11.), 4.);
+  assert_eq!(spline.clamped_sample(11.), Some(4.));
 }
 
 #[test]
@@ -130,7 +130,7 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.sample(3.), Some(1.));
   assert_eq!(spline.sample(6.5), Some(1.5));
   assert_eq!(spline.sample(10.), Some(2.));
-  assert_eq!(spline.clamped_sample(11.), 4.);
+  assert_eq!(spline.clamped_sample(11.), Some(4.));
 }
 
 #[cfg(feature = "impl-nalgebra")]

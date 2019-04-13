@@ -45,7 +45,7 @@
 //! # let end = Key::new(1., 10., Interpolation::Linear);
 //! # let spline = Spline::from_vec(vec![start, end]);
 //! assert_eq!(spline.sample(0.), Some(0.));
-//! assert_eq!(spline.clamped_sample(1.), 10.);
+//! assert_eq!(spline.clamped_sample(1.), Some(10.));
 //! assert_eq!(spline.sample(1.1), None);
 //! ```
 //!
@@ -58,8 +58,8 @@
 //! # let start = Key::new(0., 0., Interpolation::Linear);
 //! # let end = Key::new(1., 10., Interpolation::Linear);
 //! # let spline = Spline::from_vec(vec![start, end]);
-//! assert_eq!(spline.clamped_sample(-0.9), 0.); // clamped to the first key
-//! assert_eq!(spline.clamped_sample(1.1), 10.); // clamped to the last key
+//! assert_eq!(spline.clamped_sample(-0.9), Some(0.)); // clamped to the first key
+//! assert_eq!(spline.clamped_sample(1.1), Some(10.)); // clamped to the last key
 //! ```
 //!
 //! # Features and customization
@@ -284,20 +284,26 @@ impl<T> Spline<T> {
   /// If you sample before the first key or after the last one, return the first key or the last
   /// one, respectively. Otherwise, behave the same way as `Spline::sample`.
   ///
-  /// # Panic
+  /// # Error
   ///
-  /// This function panics if you have no key.
-  pub fn clamped_sample(&self, t: f32) -> T where T: Interpolate {
+  /// This function returns `None` if you have no key.
+  pub fn clamped_sample(&self, t: f32) -> Option<T> where T: Interpolate {
+    if self.0.is_empty() {
+      return None;
+    }
+
     let first = self.0.first().unwrap();
     let last = self.0.last().unwrap();
 
-    if t <= first.t {
-      return first.value;
+    let sampled = if t <= first.t {
+      first.value
     } else if t >= last.t {
-      return last.value;
-    }
+      last.value
+    } else {
+      self.sample(t).unwrap()
+    };
 
-    self.sample(t).unwrap()
+    Some(sampled)
   }
 }
 
