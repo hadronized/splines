@@ -22,12 +22,9 @@ maintenance = { status = "actively-developed" }
 [features]
 default = ["std", "impl-cgmath"]
 serialization = ["serde", "serde_derive"]
-std = []
+std = ["num-traits/std"]
 impl-cgmath = ["cgmath"]
 impl-nalgebra = ["nalgebra"]
-
-[dependencies]
-num-traits = "0.2"
 
 [dependencies.nalgebra]
 version = ">=0.14, <0.17"
@@ -36,6 +33,10 @@ optional = true
 [dependencies.cgmath]
 version = "0.16"
 optional = true
+
+[dependencies.num-traits]
+num-traits = "0.2"
+default-features = false
 
 [dependencies.serde]
 version = "1"
