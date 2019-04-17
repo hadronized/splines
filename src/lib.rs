@@ -81,9 +81,6 @@
 //!     + This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
 //!       types exported by this crate.
 //!     + Enable with the `"serialization"` feature.
-//!   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
-//!     + Adds some useful implementations of `Interpolate` for some cgmath types.
-//!     + Enable with the `"impl-cgmath"` feature.
 //!   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
 //!     + Adds some useful implementations of `Interpolate` for some nalgebra types.
 //!     + Enable with the `"impl-nalgebra"` feature.
@@ -97,27 +94,12 @@
 #![cfg_attr(not(feature = "std"), feature(alloc))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 
-// on no_std, we also need the alloc crate for Vec
-#[cfg(not(feature = "std"))] extern crate alloc;
-
-#[cfg(feature = "impl-cgmath")] extern crate cgmath;
-
-#[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
-
-#[cfg(feature = "serialization")] extern crate serde;
-#[cfg(feature = "serialization")] #[macro_use] extern crate serde_derive;
-
-#[cfg(feature = "impl-cgmath")]
-use cgmath::{
-  BaseFloat, InnerSpace, Quaternion, Vector2, Vector3, Vector4
-};
-
 #[cfg(feature = "impl-nalgebra")] use nalgebra as na;
-#[cfg(feature = "impl-nalgebra")] use nalgebra::core::{DimName, DefaultAllocator, Scalar};
-#[cfg(feature = "impl-nalgebra")] use nalgebra::core::allocator::Allocator;
 
 #[cfg(feature = "std")] use std::cmp::Ordering;
-#[cfg(feature = "std")] use std::ops::{Add, Div, Mul, Sub};
+#[cfg(feature = "std")] use std::ops::{Div, Mul};
+
+#[cfg(feature = "serialization")] use serde_derive::{Deserialize, Serialize};
 
 #[cfg(not(feature = "std"))] use alloc::vec::Vec;
 #[cfg(not(feature = "std"))] use core::cmp::Ordering;
@@ -217,11 +199,11 @@ impl<T, V> Spline<T, V> {
   /// # Return
   ///
   /// `None` if you try to sample a value at a time that has no key associated with. That can also
-  /// happen if you try to sample between two keys with a specific interpolation mode that make the
+  /// happen if you try to sample between two keys with a specific interpolation mode that makes the
   /// sampling impossible. For instance, `Interpolate::CatmullRom` requires *four* keys. If you’re
   /// near the beginning of the spline or its end, ensure you have enough keys around to make the
   /// sampling.
-  pub fn sample(&self, t: T) -> Option<V> where V: Interpolate<T>, T: Float {
+  pub fn sample(&self, t: T) -> Option<V> where T: Float + FloatConst, V: Interpolate<T> {
     let keys = &self.0;
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
@@ -241,9 +223,10 @@ impl<T, V> Spline<T, V> {
       }
 
       Interpolation::Cosine => {
+        let two_t = T::one() + T::one();
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
-        let cos_nt = (1. - (nt * T::PI).cos()) * 0.5;
+        let cos_nt = (T::one() - (nt * T::PI()).cos()) / two_t;
 
         Some(Interpolate::lerp(cp0.value, cp1.value, cos_nt))
       }
@@ -275,23 +258,25 @@ impl<T, V> Spline<T, V> {
   /// # Error
   ///
   /// This function returns `None` if you have no key.
-  pub fn clamped_sample(&self, t: f32) -> Option<T> where T: Interpolate {
+  pub fn clamped_sample(&self, t: T) -> Option<V> where T: Float + FloatConst, V: Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
 
-    let first = self.0.first().unwrap();
-    let last = self.0.last().unwrap();
+    self.sample(t).or_else(move || {
+      let first = self.0.first().unwrap();
+      if t <= first.t {
+        Some(first.value)
+      } else {
+        let last = self.0.last().unwrap();
 
-    let sampled = if t <= first.t {
-      first.value
-    } else if t >= last.t {
-      last.value
-    } else {
-      self.sample(t).unwrap()
-    };
-
-    Some(sampled)
+        if t >= last.t {
+          Some(last.value)
+        } else {
+          None
+        }
+      }
+    })
   }
 }
 
@@ -334,7 +319,7 @@ impl<'a, T, V> IntoIterator for &'a Spline<T, V> {
 ///
 /// `T` is the variable used to sample with. Typical implementations use `f32` or `f64`, but you’re
 /// free to use the ones you like.
-pub trait Interpolate<T>: Copy where T: Copy + Float {
+pub trait Interpolate<T>: Sized + Copy {
   /// Linear interpolation.
   fn lerp(a: Self, b: Self, t: T) -> Self;
 
@@ -346,145 +331,94 @@ pub trait Interpolate<T>: Copy where T: Copy + Float {
   }
 }
 
-impl Interpolate<f32> for f32 {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    a * (1. - t) + b * t
-  }
+macro_rules! impl_interpolate_simple {
+  ($t:ty) => {
+    impl Interpolate<$t> for $t {
+      fn lerp(a: Self, b: Self, t: $t) -> Self {
+        a * (1. - t) + b * t
+      }
 
-  fn cubic_hermite(x: (Self, f32), a: (Self, f32), b: (Self, f32), y: (Self, f32), t: f32) -> Self {
-    cubic_hermite(x, a, b, y, t)
+      fn cubic_hermite(x: (Self, $t), a: (Self, $t), b: (Self, $t), y: (Self, $t), t: $t) -> Self {
+        cubic_hermite_def(x, a, b, y, t)
+      }
+    }
   }
 }
 
-impl Interpolate<f32> for f64 {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    a * (1. - t as f64) + b * t as f64
-  }
+impl_interpolate_simple!(f32);
+impl_interpolate_simple!(f64);
 
-  fn cubic_hermite(
-    (x, tx): (Self, f32),
-    (a, ta): (Self, f32),
-    (b, tb): (Self, f32),
-    (y, ty): (Self, f32),
-    t: f32
-  ) -> Self {
-    cubic_hermite((x, tx as f64), (a, ta as f64), (b, tb as f64), (y, ty as f64), t as f64)
+macro_rules! impl_interpolate_via {
+  ($t:ty, $v:ty) => {
+    impl Interpolate<$t> for $v {
+      fn lerp(a: Self, b: Self, t: $t) -> Self {
+        a * (1. - t as $v) + b * t as $v
+      }
+
+      fn cubic_hermite((x, xt): (Self, $t), (a, at): (Self, $t), (b, bt): (Self, $t), (y, yt): (Self, $t), t: $t) -> Self {
+        cubic_hermite_def((x, xt as $v), (a, at as $v), (b, bt as $v), (y, yt as $v), t as $v)
+      }
+    }
   }
 }
 
-#[cfg(feature = "impl-cgmath")]
-impl<T> Interpolate<T> for Vector2<T> where T: BaseFloat {
-  fn lerp(a: Self, b: Self, t: T) -> Self {
-    a.lerp(b, t)
-  }
+impl_interpolate_via!(f32, f64);
+impl_interpolate_via!(f64, f32);
 
-  fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
-    cubic_hermite(x, a, b, y, t)
+macro_rules! impl_interpolate_na_vector {
+  ($($t:tt)*) => {
+    #[cfg(feature = "impl-nalgebra")]
+    impl<T, V> Interpolate<T> for $($t)*<V> where T: Float, V: na::Scalar + Interpolate<T> {
+      fn lerp(a: Self, b: Self, t: T) -> Self {
+        na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+      }
+    }
   }
 }
 
-#[cfg(feature = "impl-cgmath")]
-impl<T> Interpolate<T> for Vector3<T> where T: BaseFloat {
-  fn lerp(a: Self, b: Self, t: T) -> Self {
-    a.lerp(b, t)
-  }
-
-  fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
-    cubic_hermite(x, a, b, y, t)
-  }
-}
-
-#[cfg(feature = "impl-cgmath")]
-impl<T> Interpolate<T> for Vector4<T> where T: BaseFloat {
-  fn lerp(a: Self, b: Self, t: T) -> Self {
-    a.lerp(b, t)
-  }
-
-  fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
-    cubic_hermite(x, a, b, y, t)
-  }
-}
-
-#[cfg(feature = "impl-cgmath")]
-impl<T> Interpolate<T> for Quaternion<T> where T: BaseFloat {
-  fn lerp(a: Self, b: Self, t: T) -> Self {
-    a.nlerp(b, t)
-  }
-}
+impl_interpolate_na_vector!(na::Vector1);
+impl_interpolate_na_vector!(na::Vector2);
+impl_interpolate_na_vector!(na::Vector3);
+impl_interpolate_na_vector!(na::Vector4);
+impl_interpolate_na_vector!(na::Vector5);
+impl_interpolate_na_vector!(na::Vector6);
 
 #[cfg(feature = "impl-nalgebra")]
-impl<N, D> Interpolate for na::Point<N, D>
-where D: DimName,
-      DefaultAllocator: Allocator<N, D>,
-      <DefaultAllocator as Allocator<N, D>>::Buffer: Copy,
-      N: Scalar + Interpolate {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
+impl<T, N, D> Interpolate<T> for na::Point<N, D>
+where D: na::DimName,
+      na::DefaultAllocator: na::allocator::Allocator<N, D>,
+      <na::DefaultAllocator as na::allocator::Allocator<N, D>>::Buffer: Copy,
+      N: na::Scalar + Interpolate<T>,
+      T: Float {
+  fn lerp(a: Self, b: Self, t: T) -> Self {
     // The 'coords' of a point is just a vector, so we can interpolate component-wise
     // over these vectors.
     let coords = na::Vector::zip_map(&a.coords, &b.coords, |c1, c2| Interpolate::lerp(c1, c2, t));
-    na::Point::from_coordinates(coords)
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector1<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector2<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector3<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector4<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector5<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-  }
-}
-
-#[cfg(feature = "impl-nalgebra")]
-impl Interpolate for na::Vector6<f32> {
-  fn lerp(a: Self, b: Self, t: f32) -> Self {
-    na::Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
+    na::Point::from(coords)
   }
 }
 
 // Default implementation of Interpolate::cubic_hermite.
 //
 // `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
-pub(crate) fn cubic_hermite<V, T>(x: (V, T), a: (V, T), b: (V, T), y: (V, T), t: T) -> V
-where V: Copy + Add<Output = V> + Sub<Output = V> + Mul<T, Output = V> + Div<T, Output = V>,
-      T: Mul<Output = T> + Mul<f32, Output = T> + Add<Output = T> + Add<f32, Output = T> + Sub<Output = T> {
+pub(crate) fn cubic_hermite_def<V, T>(x: (V, T), a: (V, T), b: (V, T), y: (V, T), t: T) -> V
+where V: Float + Mul<T, Output = V> + Div<T, Output = V>,
+      T: Float {
+  // some stupid generic constants, because Rust doesn’t have polymorphic literals…
+  let two_t = T::one() + T::one(); // lolololol
+  let three_t = two_t + T::one(); // megalol
+
   // sampler stuff
-  let t2 = t* t;
+  let t2 = t * t;
   let t3 = t2 * t;
-  let two_t3 = t3 * 2.;
-  let three_t2 = t2 * 3.;
+  let two_t3 = t3 * two_t;
+  let three_t2 = t2 * three_t;
 
   // tangents
   let m0 = (b.0 - x.0) / (b.1 - x.1);
-	let m1 = (y.0 - a.0) / (y.1 - a.1);
+  let m1 = (y.0 - a.0) / (y.1 - a.1);
 
-  a.0 * (two_t3 - three_t2 + 1.) + m0 * (t3 - t2 * 2. + t) + b.0 * (three_t2 - two_t3) + m1 * (t3 - t2)
+  a.0 * (two_t3 - three_t2 + T::one()) + m0 * (t3 - t2 * two_t + t) + b.0 * (three_t2 - two_t3) + m1 * (t3 - t2)
 }
 
 // Normalize a time ([0;1]) given two control points.
@@ -493,7 +427,7 @@ pub(crate) fn normalize_time<T, V>(
   t: T,
   cp: &Key<T, V>,
   cp1: &Key<T, V>
-) -> T where T: PartialEq + Sub<Output = T> + Div<Output = T> {
+) -> T where T: Float {
   assert!(cp1.t != cp.t, "overlapping keys");
   (t - cp.t) / (cp1.t - cp.t)
 }

@@ -1,7 +1,7 @@
 #[macro_use] extern crate serde_json;
 extern crate splines;
 
-use serde_json::{Value, from_value};
+use serde_json::from_value;
 use splines::Spline;
 
 fn main() {
@@ -25,6 +25,6 @@ fn main() {
     ]
   };
 
-  let spline = from_value::<Spline<f32>>(value);
+  let spline = from_value::<Spline<f32, f32>>(value);
   println!("{:?}", spline);
 }

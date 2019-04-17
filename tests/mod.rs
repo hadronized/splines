@@ -1,10 +1,5 @@
-extern crate splines;
-#[cfg(feature = "impl-nalgebra")] extern crate nalgebra;
-
-#[cfg(feature = "impl-nalgebra")] use nalgebra as na;
-#[cfg(feature = "impl-nalgebra")] use splines::Interpolate;
-
-use splines::{Interpolation, Key, Spline};
+use splines::{Interpolate, Interpolation, Key, Spline};
+use nalgebra as na;
 
 #[test]
 fn step_interpolation_0() {
@@ -125,7 +120,7 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.sample(1.5), Some(2.5));
   assert_eq!(spline.sample(2.), Some(0.));
   assert_eq!(spline.sample(2.05), Some(0.));
-  assert_eq!(spline.sample(2.1), Some(0.));
+  assert_eq!(spline.sample(2.099), Some(0.));
   assert_eq!(spline.sample(2.75), Some(1.));
   assert_eq!(spline.sample(3.), Some(1.));
   assert_eq!(spline.sample(6.5), Some(1.5));
