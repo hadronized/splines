@@ -4,10 +4,25 @@ use splines::{Interpolation, Key, Spline};
 use nalgebra as na;
 
 #[test]
-fn step_interpolation_0() {
+fn step_interpolation_f32() {
   let start = Key::new(0., 0., Interpolation::Step(0.));
   let end = Key::new(1., 10., Interpolation::default());
-  let spline = Spline::from_vec(vec![start, end]);
+  let spline = Spline::<f32, _>::from_vec(vec![start, end]);
+
+  assert_eq!(spline.sample(0.), Some(10.));
+  assert_eq!(spline.sample(0.1), Some(10.));
+  assert_eq!(spline.sample(0.2), Some(10.));
+  assert_eq!(spline.sample(0.5), Some(10.));
+  assert_eq!(spline.sample(0.9), Some(10.));
+  assert_eq!(spline.sample(1.), None);
+  assert_eq!(spline.clamped_sample(1.), Some(10.));
+}
+
+#[test]
+fn step_interpolation_f64() {
+  let start = Key::new(0., 0., Interpolation::Step(0.));
+  let end = Key::new(1., 10., Interpolation::default());
+  let spline = Spline::<f64, _>::from_vec(vec![start, end]);
 
   assert_eq!(spline.sample(0.), Some(10.));
   assert_eq!(spline.sample(0.1), Some(10.));
