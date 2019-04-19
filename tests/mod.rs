@@ -1,4 +1,6 @@
-use splines::{Interpolate, Interpolation, Key, Spline};
+use splines::{Interpolation, Key, Spline};
+
+#[cfg(feature = "impl-nalgebra")]
 use nalgebra as na;
 
 #[test]
@@ -131,6 +133,8 @@ fn several_interpolations_several_keys() {
 #[cfg(feature = "impl-nalgebra")]
 #[test]
 fn nalgebra_point_interpolation() {
+  use splines::Interpolate;
+
   let start = na::Point2::new(0.0, 0.0);
   let mid = na::Point2::new(0.5, 0.5);
   let end = na::Point2::new(1.0, 1.0);
@@ -143,6 +147,8 @@ fn nalgebra_point_interpolation() {
 #[cfg(feature = "impl-nalgebra")]
 #[test]
 fn nalgebra_vector_interpolation() {
+  use splines::Interpolate;
+
   let start = na::Vector2::new(0.0, 0.0);
   let mid = na::Vector2::new(0.5, 0.5);
   let end = na::Vector2::new(1.0, 1.0);
@@ -151,4 +157,3 @@ fn nalgebra_vector_interpolation() {
   assert_eq!(Interpolate::lerp(start, end, 1.0), end);
   assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
 }
-
