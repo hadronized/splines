@@ -81,6 +81,9 @@
 //!     + This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
 //!       types exported by this crate.
 //!     + Enable with the `"serialization"` feature.
+//!   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
+//!     + Adds some useful implementations of `Interpolate` for some cgmath types.
+//!     + Enable with the `"impl-cgmath"` feature.
 //!   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
 //!     + Adds some useful implementations of `Interpolate` for some nalgebra types.
 //!     + Enable with the `"impl-nalgebra"` feature.
@@ -94,6 +97,7 @@
 #![cfg_attr(not(feature = "std"), feature(alloc))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 
+#[cfg(feature = "impl-cgmath")] mod cgmath;
 pub mod interpolate;
 pub mod interpolation;
 pub mod iter;
