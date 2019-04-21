@@ -1,5 +1,8 @@
 use alga::general::{ClosedAdd, ClosedDiv, ClosedMul, ClosedSub};
-use nalgebra::{DefaultAllocator, DimName, Point, Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
+use nalgebra::{
+  DefaultAllocator, DimName, Point, Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5,
+  Vector6
+};
 use nalgebra::allocator::Allocator;
 use num_traits as nt;
 use std::ops::Mul;
