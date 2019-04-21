@@ -13,10 +13,12 @@ macro_rules! impl_interpolate_vector {
   ($($t:tt)*) => {
     // implement Linear
     impl<T> Linear<T> for $($t)*<T> where T: Scalar + ClosedMul + ClosedDiv {
+      #[inline(always)]
       fn outer_mul(self, t: T) -> Self {
         self * t
       }
 
+      #[inline(always)]
       fn outer_div(self, t: T) -> Self {
         self / t
       }
@@ -33,10 +35,12 @@ macro_rules! impl_interpolate_vector {
              ClosedMul +
              ClosedSub +
              Interpolate<T> {
+      #[inline(always)]
       fn lerp(a: Self, b: Self, t: T) -> Self {
         Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
       }
 
+      #[inline(always)]
       fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
         cubic_hermite_def(x, a, b, y, t)
       }
@@ -56,10 +60,12 @@ where D: DimName,
       DefaultAllocator: Allocator<T, D>,
       <DefaultAllocator as Allocator<T, D>>::Buffer: Copy,
       T: Scalar + ClosedDiv + ClosedMul {
+  #[inline(always)]
   fn outer_mul(self, t: T) -> Self {
     self * t
   }
 
+  #[inline(always)]
   fn outer_div(self, t: T) -> Self {
     self / t
   }
