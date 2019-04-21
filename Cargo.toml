@@ -21,14 +21,15 @@ maintenance = { status = "actively-developed" }
 
 [features]
 default = ["std"]
-serialization = ["serde", "serde_derive"]
-std = ["num-traits/std"]
 impl-cgmath = ["cgmath"]
-impl-nalgebra = ["nalgebra"]
+impl-nalgebra = ["alga", "nalgebra", "num-traits"]
+serialization = ["serde", "serde_derive"]
+std = []
 
 [dependencies]
+alga = { version = "0.9", optional = true }
 cgmath = { version = "0.17", optional = true }
 nalgebra = { version = ">=0.14, <0.19", optional = true }
-num-traits = { version = "0.2", default-features = false }
+num-traits = { version = "0.2", optional = true }
 serde =  { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }

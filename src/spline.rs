@@ -1,13 +1,13 @@
 #[cfg(feature = "serialization")] use serde_derive::{Deserialize, Serialize};
-#[cfg(feature = "std")] use std::cmp::Ordering;
-#[cfg(not(feature = "std"))] use core::cmp::Ordering;
 #[cfg(not(feature = "std"))] use alloc::vec::Vec;
+#[cfg(feature = "std")] use std::cmp::Ordering;
+#[cfg(feature = "std")] use std::ops::{Div, Mul};
+#[cfg(not(feature = "std"))] use core::ops::{Div, Mul};
+#[cfg(not(feature = "std"))] use core::cmp::Ordering;
 
-use crate::interpolate::Interpolate;
+use crate::interpolate::{Interpolate, Additive, One, Trigo};
 use crate::interpolation::Interpolation;
 use crate::key::Key;
-
-use num_traits::{Float, FloatConst};
 
 /// Spline curve used to provide interpolation between control points (keys).
 #[derive(Debug, Clone)]
@@ -53,7 +53,7 @@ impl<T, V> Spline<T, V> {
   /// sampling impossible. For instance, `Interpolate::CatmullRom` requires *four* keys. If you’re
   /// near the beginning of the spline or its end, ensure you have enough keys around to make the
   /// sampling.
-  pub fn sample(&self, t: T) -> Option<V> where T: Float + FloatConst, V: Interpolate<T> {
+  pub fn sample(&self, t: T) -> Option<V> where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T>, V: Interpolate<T> {
     let keys = &self.0;
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
@@ -76,7 +76,7 @@ impl<T, V> Spline<T, V> {
         let two_t = T::one() + T::one();
         let cp1 = &keys[i+1];
         let nt = normalize_time(t, cp0, cp1);
-        let cos_nt = (T::one() - (nt * T::PI()).cos()) / two_t;
+        let cos_nt = (T::one() - (nt * T::pi()).cos()) / two_t;
 
         Some(Interpolate::lerp(cp0.value, cp1.value, cos_nt))
       }
@@ -108,7 +108,7 @@ impl<T, V> Spline<T, V> {
   /// # Error
   ///
   /// This function returns `None` if you have no key.
-  pub fn clamped_sample(&self, t: T) -> Option<V> where T: Float + FloatConst, V: Interpolate<T> {
+  pub fn clamped_sample(&self, t: T) -> Option<V> where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T>, V: Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
@@ -136,7 +136,7 @@ pub(crate) fn normalize_time<T, V>(
   t: T,
   cp: &Key<T, V>,
   cp1: &Key<T, V>
-) -> T where T: Float {
+) -> T where T: Additive + Div<T, Output = T> {
   assert!(cp1.t != cp.t, "overlapping keys");
   (t - cp.t) / (cp1.t - cp.t)
 }

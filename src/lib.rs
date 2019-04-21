@@ -97,6 +97,8 @@
 #![cfg_attr(not(feature = "std"), feature(alloc))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 
+#[cfg(not(feature = "std"))] extern crate alloc;
+
 #[cfg(feature = "impl-cgmath")] mod cgmath;
 pub mod interpolate;
 pub mod interpolation;
