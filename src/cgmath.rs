@@ -1,4 +1,6 @@
-use cgmath::{BaseFloat, BaseNum, InnerSpace, Quaternion, VectorSpace, Vector1, Vector2, Vector3, Vector4};
+use cgmath::{
+  BaseFloat, BaseNum, InnerSpace, Quaternion, VectorSpace, Vector1, Vector2, Vector3, Vector4
+};
 
 use crate::interpolate::{Additive, Interpolate, Linear, One, cubic_hermite_def};
 
@@ -14,7 +16,8 @@ macro_rules! impl_interpolate_vec {
       }
     }
 
-    impl<T> Interpolate<T> for $($t)*<T> where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
+    impl<T> Interpolate<T> for $($t)*<T>
+    where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
       fn lerp(a: Self, b: Self, t: T) -> Self {
         a.lerp(b, t)
       }
@@ -41,7 +44,8 @@ impl<T> Linear<T> for Quaternion<T> where T: BaseFloat {
   }
 }
 
-impl<T> Interpolate<T> for Quaternion<T> where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
+impl<T> Interpolate<T> for Quaternion<T>
+where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
   fn lerp(a: Self, b: Self, t: T) -> Self {
     a.nlerp(b, t)
   }
