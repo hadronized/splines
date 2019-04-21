@@ -19,6 +19,5 @@ script:
   - echo "Testing feature serialization"
   - cargo build --verbose --features serialization
   - cargo test --verbose --features serialization
-  - echo "Testing without std"
+  - echo "Building without std"
   - cargo build --verbose --no-default-features
-  - cargo test --verbose --no-default-features
