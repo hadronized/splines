@@ -27,16 +27,12 @@ pub trait Interpolate<T>: Sized + Copy {
 /// A trait for anything that supports additions, subtraction, multiplication and division.
 pub trait Additive:
   Copy +
-  PartialEq +
-  PartialOrd +
   Add<Self, Output = Self> +
   Sub<Self, Output = Self> {
 }
 
 impl<T> Additive for T
 where T: Copy +
-         PartialEq +
-         PartialOrd +
          Add<Self, Output = Self> +
          Sub<Self, Output = Self> {
 }

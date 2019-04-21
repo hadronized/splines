@@ -53,7 +53,9 @@ impl<T, V> Spline<T, V> {
   /// sampling impossible. For instance, `Interpolate::CatmullRom` requires *four* keys. If you’re
   /// near the beginning of the spline or its end, ensure you have enough keys around to make the
   /// sampling.
-  pub fn sample(&self, t: T) -> Option<V> where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T>, V: Interpolate<T> {
+  pub fn sample(&self, t: T) -> Option<V>
+  where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
+        V: Interpolate<T> {
     let keys = &self.0;
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
@@ -108,7 +110,9 @@ impl<T, V> Spline<T, V> {
   /// # Error
   ///
   /// This function returns `None` if you have no key.
-  pub fn clamped_sample(&self, t: T) -> Option<V> where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T>, V: Interpolate<T> {
+  pub fn clamped_sample(&self, t: T) -> Option<V>
+  where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
+        V: Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
@@ -136,7 +140,7 @@ pub(crate) fn normalize_time<T, V>(
   t: T,
   cp: &Key<T, V>,
   cp1: &Key<T, V>
-) -> T where T: Additive + Div<T, Output = T> {
+) -> T where T: Additive + Div<T, Output = T> + PartialEq {
   assert!(cp1.t != cp.t, "overlapping keys");
   (t - cp.t) / (cp1.t - cp.t)
 }

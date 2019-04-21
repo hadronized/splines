@@ -1,26 +1,52 @@
-use cgmath::{BaseNum, InnerSpace, Quaternion, VectorSpace, Vector2, Vector3, Vector4};
-use num_traits::Float;
+use cgmath::{BaseFloat, BaseNum, InnerSpace, Quaternion, VectorSpace, Vector1, Vector2, Vector3, Vector4};
 
-use crate::interpolate::{Interpolate, cubic_hermite_def};
+use crate::interpolate::{Additive, Interpolate, Linear, One, cubic_hermite_def};
 
 macro_rules! impl_interpolate_vec {
-  ($t:ty, $($q:tt)*) => {
-    impl Interpolate<$t> for $($q)*<$t> {
-      fn lerp(a: Self, b: Self, t: $t) -> Self {
+  ($($t:tt)*) => {
+    impl<T> Linear<T> for $($t)*<T> where T: BaseNum {
+      fn outer_mul(self, t: T) -> Self {
+        self * t
+      }
+
+      fn outer_div(self, t: T) -> Self {
+        self / t
+      }
+    }
+
+    impl<T> Interpolate<T> for $($t)*<T> where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
+      fn lerp(a: Self, b: Self, t: T) -> Self {
         a.lerp(b, t)
       }
 
-      fn cubic_hermite(x: (Self, $t), a: (Self, $t), b: (Self, $t), y: (Self, $t), t: $t) -> Self {
+      fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
         cubic_hermite_def(x, a, b, y, t)
       }
     }
   }
 }
 
-impl_interpolate_vec!(f32, Vector2);
+impl_interpolate_vec!(Vector1);
+impl_interpolate_vec!(Vector2);
+impl_interpolate_vec!(Vector3);
+impl_interpolate_vec!(Vector4);
 
-//impl Interpolate for Quaternion<f32> {
-//  fn lerp(a: Self, b: Self, t: f32) -> Self {
-//    a.nlerp(b, t)
-//  }
-//}
+impl<T> Linear<T> for Quaternion<T> where T: BaseFloat {
+  fn outer_mul(self, t: T) -> Self {
+    self * t
+  }
+
+  fn outer_div(self, t: T) -> Self {
+    self / t
+  }
+}
+
+impl<T> Interpolate<T> for Quaternion<T> where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
+  fn lerp(a: Self, b: Self, t: T) -> Self {
+    a.nlerp(b, t)
+  }
+
+  fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
+    cubic_hermite_def(x, a, b, y, t)
+  }
+}

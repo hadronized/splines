@@ -1,7 +1,7 @@
 use splines::{Interpolation, Key, Spline};
 
-#[cfg(feature = "impl-nalgebra")]
-use nalgebra as na;
+#[cfg(feature = "impl-cgmath")] use cgmath as cg;
+#[cfg(feature = "impl-nalgebra")] use nalgebra as na;
 
 #[test]
 fn step_interpolation_f32() {
@@ -143,6 +143,20 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.sample(6.5), Some(1.5));
   assert_eq!(spline.sample(10.), Some(2.));
   assert_eq!(spline.clamped_sample(11.), Some(4.));
+}
+
+#[cfg(feature = "impl-cgmath")]
+#[test]
+fn cgmath_vector_interpolation() {
+  use splines::Interpolate;
+
+  let start = cg::Vector2::new(0.0, 0.0);
+  let mid = cg::Vector2::new(0.5, 0.5);
+  let end = cg::Vector2::new(1.0, 1.0);
+
+  assert_eq!(Interpolate::lerp(start, end, 0.0), start);
+  assert_eq!(Interpolate::lerp(start, end, 1.0), end);
+  assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
 }
 
 #[cfg(feature = "impl-nalgebra")]
