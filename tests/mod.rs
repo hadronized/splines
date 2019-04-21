@@ -147,20 +147,6 @@ fn several_interpolations_several_keys() {
 
 #[cfg(feature = "impl-nalgebra")]
 #[test]
-fn nalgebra_point_interpolation() {
-  use splines::Interpolate;
-
-  let start = na::Point2::new(0.0, 0.0);
-  let mid = na::Point2::new(0.5, 0.5);
-  let end = na::Point2::new(1.0, 1.0);
-
-  assert_eq!(Interpolate::lerp(start, end, 0.0), start);
-  assert_eq!(Interpolate::lerp(start, end, 1.0), end);
-  assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
-}
-
-#[cfg(feature = "impl-nalgebra")]
-#[test]
 fn nalgebra_vector_interpolation() {
   use splines::Interpolate;
 
