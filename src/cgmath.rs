@@ -1,5 +1,5 @@
 use cgmath::{
-  BaseFloat, BaseNum, InnerSpace, Quaternion, Vector1, Vector2, Vector3, Vector4
+  BaseFloat, BaseNum, InnerSpace, Quaternion, Vector1, Vector2, Vector3, Vector4, VectorSpace
 };
 
 use crate::interpolate::{Additive, Interpolate, Linear, One, cubic_hermite_def};
