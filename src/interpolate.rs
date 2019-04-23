@@ -1,3 +1,23 @@
+//! The [`Interpolate`] trait and associated symbols.
+//!
+//! The [`Interpolate`] trait is the central concept of the crate. It enables a spline to be
+//! sampled at by interpolating in between control points.
+//!
+//! In order for a type to be used in [`Spline<K, V>`], some properties must be met:
+//!
+//!   - The `K` type must implement several traits:
+//!     - [`One`], giving a neutral element for the multiplication monoid.
+//!     - [`Additive`], making the type additive (i.e. one can add or subtract with it).
+//!     - [`Linear`], unlocking linear combinations, required for interpolating.
+//!     - [`Trigo`], a trait giving *π* and *cosine*, required for e.g. cosine interpolation.
+//!
+//! [`Interpolate`]: crate::interpolate::Interpolate
+//! [`Spline<K, V>`]: crate::spline::Spline
+//! [`One`]: crate::interpolate::One
+//! [`Additive`]: crate::interpolate::Additive
+//! [`Linear`]: crate::interpolate::Linear
+//! [`Trigo`]: crate::interpolate::Trigo
+
 #[cfg(feature = "std")] use std::f32;
 #[cfg(not(feature = "std"))] use core::f32;
 #[cfg(not(feature = "std"))] use core::intrinsics::cosf32;
@@ -10,21 +30,28 @@
 /// Keys that can be interpolated in between. Implementing this trait is required to perform
 /// sampling on splines.
 ///
-/// `T` is the variable used to sample with. Typical implementations use `f32` or `f64`, but you’re
-/// free to use the ones you like.
+/// `T` is the variable used to sample with. Typical implementations use [`f32`] or [`f64`], but
+/// you’re free to use the ones you like. Feel free to have a look at [`Spline::sample`] for
+/// instance to know which trait your type must implement to be usable.
+///
+/// [`Spline::sample`]: crate::spline::Spline::sample
 pub trait Interpolate<T>: Sized + Copy {
   /// Linear interpolation.
   fn lerp(a: Self, b: Self, t: T) -> Self;
 
   /// Cubic hermite interpolation.
   ///
-  /// Default to `Self::lerp`.
+  /// Default to [`lerp`].
+  ///
+  /// [`lerp`]: Interpolate::lerp
   fn cubic_hermite(_: (Self, T), a: (Self, T), b: (Self, T), _: (Self, T), t: T) -> Self {
     Self::lerp(a.0, b.0, t)
   }
 }
 
-/// A trait for anything that supports additions, subtraction, multiplication and division.
+/// Set of types that support additions and subtraction.
+///
+/// The [`Copy`] trait is also a supertrait as it’s likely to be used everywhere.
 pub trait Additive:
   Copy +
   Add<Self, Output = Self> +
@@ -37,8 +64,8 @@ where T: Copy +
          Sub<Self, Output = Self> {
 }
 
-/// Linear combination.
-pub trait Linear<T> {
+/// Set of additive types that support outer multiplication and division, making them linear.
+pub trait Linear<T>: Additive {
   /// Apply an outer multiplication law.
   fn outer_mul(self, t: T) -> Self;
 
@@ -84,7 +111,7 @@ impl_linear_cast!(f64, f32);
 
 /// Types with a neutral element for multiplication.
 pub trait One {
-  /// Return the neutral element for the multiplicative monoid.
+  /// The neutral element for the multiplicative monoid — typically called `1`.
   fn one() -> Self;
 }
 
@@ -151,11 +178,11 @@ impl Trigo for f64 {
   }
 }
 
-// Default implementation of Interpolate::cubic_hermite.
+// Default implementation of Interpolate::cubic_hermite`.
 //
 // `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
 pub(crate) fn cubic_hermite_def<V, T>(x: (V, T), a: (V, T), b: (V, T), y: (V, T), t: T) -> V
-where V: Additive + Linear<T>,
+where V: Linear<T>,
       T: Additive + Mul<T, Output = T> + One {
   // some stupid generic constants, because Rust doesn’t have polymorphic literals…
   let one_t = T::one();
