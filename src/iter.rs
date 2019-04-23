@@ -1,10 +1,18 @@
+//! Spline [`Iterator`], in a nutshell.
+//!
+//! You can iterate over a [`Spline<K, V>`]’s keys with the [`IntoIterator`] trait on
+//! `&Spline<K, V>`. This gives you iterated [`Key<K, V>`] keys.
+//!
+//! [`Spline<K, V>`]: crate::spline::Spline
+//! [`Key<K, V>`]: crate::key::Key
+
 use crate::{Key, Spline};
 
 /// Iterator over spline keys.
 ///
-/// This iterator type assures you to iterate over sorted keys.
+/// This iterator type is guaranteed to iterate over sorted keys.
 pub struct Iter<'a, T, V> where T: 'a, V: 'a {
-  anim_param: &'a Spline<T, V>,
+  spline: &'a Spline<T, V>,
   i: usize
 }
 
@@ -12,7 +20,7 @@ impl<'a, T, V> Iterator for Iter<'a, T, V> {
   type Item = &'a Key<T, V>;
 
   fn next(&mut self) -> Option<Self::Item> {
-    let r = self.anim_param.0.get(self.i);
+    let r = self.spline.0.get(self.i);
 
     if let Some(_) = r {
       self.i += 1;
@@ -28,7 +36,7 @@ impl<'a, T, V> IntoIterator for &'a Spline<T, V> {
 
   fn into_iter(self) -> Self::IntoIter {
     Iter {
-      anim_param: self,
+      spline: self,
       i: 0
     }
   }
