@@ -1,3 +1,5 @@
+//! Spline curves and operations.
+
 #[cfg(feature = "serialization")] use serde_derive::{Deserialize, Serialize};
 #[cfg(not(feature = "std"))] use alloc::vec::Vec;
 #[cfg(feature = "std")] use std::cmp::Ordering;
@@ -10,6 +12,17 @@ use crate::interpolation::Interpolation;
 use crate::key::Key;
 
 /// Spline curve used to provide interpolation between control points (keys).
+///
+/// Splines are made out of control points ([`Key`]). When creating a [`Spline`] with
+/// [`Spline::from_vec`] or [`Spline::from_iter`], the keys don’t have to be sorted (they are sorted
+/// automatically by the sampling value).
+///
+/// You can sample from a spline with several functions:
+///
+///   - [`Spline::sample`]: allows you to sample from a spline. If not enough keys are available
+///     for the required interpolation mode, you get `None`.
+///   - [`Spline::clamped_sample`]: behaves like [`Spline::sample`] but will return either the first
+///     or last key if out of bound; it will return `None` if not enough key.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
 pub struct Spline<T, V>(pub(crate) Vec<Key<T, V>>);
@@ -29,7 +42,7 @@ impl<T, V> Spline<T, V> {
   /// # Note on iterators
   ///
   /// It’s valid to use any iterator that implements `Iterator<Item = Key<T>>`. However, you should
-  /// use `Spline::from_vec` if you are passing a `Vec<_>`. This will remove dynamic allocations.
+  /// use [`Spline::from_vec`] if you are passing a [`Vec`]. This will remove dynamic allocations.
   pub fn from_iter<I>(iter: I) -> Self where I: Iterator<Item = Key<T, V>>, T: PartialOrd {
     Self::from_vec(iter.collect())
   }
@@ -50,9 +63,10 @@ impl<T, V> Spline<T, V> {
   ///
   /// `None` if you try to sample a value at a time that has no key associated with. That can also
   /// happen if you try to sample between two keys with a specific interpolation mode that makes the
-  /// sampling impossible. For instance, `Interpolate::CatmullRom` requires *four* keys. If you’re
-  /// near the beginning of the spline or its end, ensure you have enough keys around to make the
-  /// sampling.
+  /// sampling impossible. For instance, [`Interpolation::CatmullRom`] requires *four* keys. If
+  /// you’re near the beginning of the spline or its end, ensure you have enough keys around to make
+  /// the sampling.
+  ///
   pub fn sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
         V: Interpolate<T> {
@@ -105,11 +119,11 @@ impl<T, V> Spline<T, V> {
   /// # Return
   ///
   /// If you sample before the first key or after the last one, return the first key or the last
-  /// one, respectively. Otherwise, behave the same way as `Spline::sample`.
+  /// one, respectively. Otherwise, behave the same way as [`Spline::sample`].
   ///
   /// # Error
   ///
-  /// This function returns `None` if you have no key.
+  /// This function returns [`None`] if you have no key.
   pub fn clamped_sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
         V: Interpolate<T> {
