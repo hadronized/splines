@@ -3,13 +3,22 @@
 //! The [`Interpolate`] trait is the central concept of the crate. It enables a spline to be
 //! sampled at by interpolating in between control points.
 //!
-//! In order for a type to be used in [`Spline<K, V>`], some properties must be met:
+//! In order for a type to be used in [`Spline<K, V>`], some properties must be met about the `K`
+//! type must implementing several traits:
 //!
-//!   - The `K` type must implement several traits:
-//!     - [`One`], giving a neutral element for the multiplication monoid.
-//!     - [`Additive`], making the type additive (i.e. one can add or subtract with it).
-//!     - [`Linear`], unlocking linear combinations, required for interpolating.
-//!     - [`Trigo`], a trait giving *π* and *cosine*, required for e.g. cosine interpolation.
+//!   - [`One`], giving a neutral element for the multiplication monoid.
+//!   - [`Additive`], making the type additive (i.e. one can add or subtract with it).
+//!   - [`Linear`], unlocking linear combinations, required for interpolating.
+//!   - [`Trigo`], a trait giving *π* and *cosine*, required for e.g. cosine interpolation.
+//!
+//! Feel free to have a look at current implementors for further help.
+//!
+//! > *Why doesn’t this crate use [num-traits] instead of
+//! > defining its own traits?*
+//!
+//! The reason for this is quite simple: this crate provides a `no_std` support, which is not
+//! currently available easily with [num-traits]. Also, if something changes in [num-traits] with
+//! those traits, it would make this whole crate unstable.
 //!
 //! [`Interpolate`]: crate::interpolate::Interpolate
 //! [`Spline<K, V>`]: crate::spline::Spline
@@ -17,6 +26,7 @@
 //! [`Additive`]: crate::interpolate::Additive
 //! [`Linear`]: crate::interpolate::Linear
 //! [`Trigo`]: crate::interpolate::Trigo
+//! [num-traits]: https://crates.io/crates/num-traits
 
 #[cfg(feature = "std")] use std::f32;
 #[cfg(not(feature = "std"))] use core::f32;
@@ -178,10 +188,10 @@ impl Trigo for f64 {
   }
 }
 
-// Default implementation of Interpolate::cubic_hermite`.
-//
-// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
-pub(crate) fn cubic_hermite_def<V, T>(x: (V, T), a: (V, T), b: (V, T), y: (V, T), t: T) -> V
+/// Default implementation of [`Interpolate::cubic_hermite`].
+///
+/// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
+pub fn cubic_hermite_def<V, T>(x: (V, T), a: (V, T), b: (V, T), y: (V, T), t: T) -> V
 where V: Linear<T>,
       T: Additive + Mul<T, Output = T> + One {
   // some stupid generic constants, because Rust doesn’t have polymorphic literals…
