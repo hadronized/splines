@@ -5,7 +5,4 @@ authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 
 [dependencies]
 serde_json = "1"
-
-[dependencies.splines]
-version = "0.2"
-features = ["serialization"]
+splines =  { version = "1.0.0-rc.2", features = ["serialization"] }
