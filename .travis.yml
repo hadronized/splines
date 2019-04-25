@@ -21,3 +21,9 @@ script:
   - cargo test --verbose --features serialization
   - echo "Building without std"
   - cargo build --verbose --no-default-features
+  - echo "Testing with cgmath"
+  - cargo build --verbose --features impl-cgmath
+  - cargo test --verbose --features impl-cgmath
+  - echo "Testing with nalgebra"
+  - cargo build --verbose --features impl-nalgebra
+  - cargo test --verbose --features impl-nalgebra

@@ -1,9 +1,5 @@
 use alga::general::{ClosedAdd, ClosedDiv, ClosedMul, ClosedSub};
-use nalgebra::{
-  DefaultAllocator, DimName, Point, Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5,
-  Vector6
-};
-use nalgebra::allocator::Allocator;
+use nalgebra::{Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
 use num_traits as nt;
 use std::ops::Mul;
 
@@ -12,7 +8,7 @@ use crate::interpolate::{Interpolate, Linear, Additive, One, cubic_hermite_def};
 macro_rules! impl_interpolate_vector {
   ($($t:tt)*) => {
     // implement Linear
-    impl<T> Linear<T> for $($t)*<T> where T: Scalar + ClosedMul + ClosedDiv {
+    impl<T> Linear<T> for $($t)*<T> where T: Scalar + ClosedAdd + ClosedSub + ClosedMul + ClosedDiv {
       #[inline(always)]
       fn outer_mul(self, t: T) -> Self {
         self * t
@@ -54,19 +50,3 @@ impl_interpolate_vector!(Vector3);
 impl_interpolate_vector!(Vector4);
 impl_interpolate_vector!(Vector5);
 impl_interpolate_vector!(Vector6);
-
-impl<T, D> Linear<T> for Point<T, D>
-where D: DimName,
-      DefaultAllocator: Allocator<T, D>,
-      <DefaultAllocator as Allocator<T, D>>::Buffer: Copy,
-      T: Scalar + ClosedDiv + ClosedMul {
-  #[inline(always)]
-  fn outer_mul(self, t: T) -> Self {
-    self * t
-  }
-
-  #[inline(always)]
-  fn outer_div(self, t: T) -> Self {
-    self / t
-  }
-}
