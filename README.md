@@ -13,9 +13,9 @@ switch to a cubic Hermite interpolator for the next section.
 
 Most of the crate consists of three types:
 
-- [`Key`], which represents the control points by which the spline must pass.
-- [`Interpolation`], the type of possible interpolation for each segment.
-- [`Spline`], a spline from which you can *sample* points by interpolation.
+  - [`Key`], which represents the control points by which the spline must pass.
+  - [`Interpolation`], the type of possible interpolation for each segment.
+  - [`Spline`], a spline from which you can *sample* points by interpolation.
 
 When adding control points, you add new sections. Two control points define a section – i.e.
 it’s not possible to define a spline without at least two control points. Every time you add a
@@ -40,17 +40,13 @@ key. We use the default one because we don’t care.
 # Interpolate values
 
 The whole purpose of splines is to interpolate discrete values to yield continuous ones. This is
-usually done with the `Spline::sample` method. This method expects the interpolation parameter
+usually done with the [`Spline::sample`] method. This method expects the sampling parameter
 (often, this will be the time of your simulation) as argument and will yield an interpolated
 value.
 
-If you try to sample in out-of-bounds interpolation parameter, you’ll get no value.
+If you try to sample in out-of-bounds sampling parameter, you’ll get no value.
 
 ```
-# use splines::{Interpolation, Key, Spline};
-# let start = Key::new(0., 0., Interpolation::Linear);
-# let end = Key::new(1., 10., Interpolation::Linear);
-# let spline = Spline::from_vec(vec![start, end]);
 assert_eq!(spline.sample(0.), Some(0.));
 assert_eq!(spline.clamped_sample(1.), Some(10.));
 assert_eq!(spline.sample(1.1), None);
@@ -61,13 +57,16 @@ important for simulations / animations. Feel free to use the `Spline::clamped_in
 that purpose.
 
 ```
-# use splines::{Interpolation, Key, Spline};
-# let start = Key::new(0., 0., Interpolation::Linear);
-# let end = Key::new(1., 10., Interpolation::Linear);
-# let spline = Spline::from_vec(vec![start, end]);
 assert_eq!(spline.clamped_sample(-0.9), Some(0.)); // clamped to the first key
 assert_eq!(spline.clamped_sample(1.1), Some(10.)); // clamped to the last key
 ```
+
+# Polymorphic sampling types
+
+[`Spline`] curves are parametered both by the carried value (being interpolated) but also the
+sampling type. It’s very typical to use `f32` or `f64` but really, you can in theory use any
+kind of type; that type must, however, implement a contract defined by a set of traits to
+implement. See [the documentation of this module](crate::interpolate) for further details.
 
 # Features and customization
 
@@ -84,20 +83,20 @@ not. It’s especially important to see how it copes with the documentation.
 
 So here’s a list of currently supported features and how to enable them:
 
-- **Serialization / deserialization.**
-+ This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
-types exported by this crate.
-+ Enable with the `"serialization"` feature.
-- **[cgmath](https://crates.io/crates/cgmath) implementors.**
-+ Adds some useful implementations of `Interpolate` for some cgmath types.
-+ Enable with the `"impl-cgmath"` feature.
-- **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
-+ Adds some useful implementations of `Interpolate` for some nalgebra types.
-+ Enable with the `"impl-nalgebra"` feature.
-- **Standard library / no standard library.**
-+ It’s possible to compile against the standard library or go on your own without it.
-+ Compiling with the standard library is enabled by default.
-+ Use `default-features = []` in your `Cargo.toml` to disable.
-+ Enable explicitly with the `"std"` feature.
+  - **Serialization / deserialization.**
+    + This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
+      types exported by this crate.
+    + Enable with the `"serialization"` feature.
+  - **[cgmath](https://crates.io/crates/cgmath) implementors.**
+    + Adds some useful implementations of `Interpolate` for some cgmath types.
+    + Enable with the `"impl-cgmath"` feature.
+  - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
+    + Adds some useful implementations of `Interpolate` for some nalgebra types.
+    + Enable with the `"impl-nalgebra"` feature.
+  - **Standard library / no standard library.**
+    + It’s possible to compile against the standard library or go on your own without it.
+    + Compiling with the standard library is enabled by default.
+    + Use `default-features = []` in your `Cargo.toml` to disable.
+    + Enable explicitly with the `"std"` feature.
 
 <!-- cargo-sync-readme end -->
