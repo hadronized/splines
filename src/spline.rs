@@ -52,6 +52,18 @@ impl<T, V> Spline<T, V> {
     &self.0
   }
 
+  /// Number of keys.
+  #[inline(always)]
+  pub fn len(&self) -> usize {
+    self.0.len()
+  }
+
+  /// Check whether the spline has no key.
+  #[inline(always)]
+  pub fn is_empty(&self) -> bool {
+    self.0.is_empty()
+  }
+
   /// Sample a spline at a given time.
   ///
   /// The current implementation, based on immutability, cannot perform in constant time. This means
@@ -145,6 +157,15 @@ impl<T, V> Spline<T, V> {
         }
       }
     })
+  }
+
+  /// Remove a ke from the spline.
+  pub fn remove(&mut self, index: usize) -> Option<Key<T, V>> {
+    if index >= self.0.len() {
+      None
+    } else {
+      Some(self.0.remove(index))
+    }
   }
 }
 

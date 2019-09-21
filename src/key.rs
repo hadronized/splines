@@ -17,7 +17,7 @@ use crate::interpolation::Interpolation;
 /// key and the next one – if existing. Have a look at [`Interpolation`] for further details.
 ///
 /// [`Interpolation`]: crate::interpolation::Interpolation
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
 #[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
 pub struct Key<T, V> {
