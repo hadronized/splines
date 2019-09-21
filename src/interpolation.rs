@@ -5,7 +5,7 @@
 /// Available kind of interpolations.
 ///
 /// Feel free to visit each variant for more documentation.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
 #[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
 pub enum Interpolation<T> {
