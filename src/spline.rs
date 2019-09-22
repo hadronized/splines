@@ -42,7 +42,7 @@ impl<T, V> Spline<T, V> {
   /// # Note on iterators
   ///
   /// It’s valid to use any iterator that implements `Iterator<Item = Key<T>>`. However, you should
-  /// use [`Spline::from_vec`] if you are passing a [`Vec`]. This will remove dynamic allocations.
+  /// use [`Spline::from_vec`] if you are passing a [`Vec`].
   pub fn from_iter<I>(iter: I) -> Self where I: Iterator<Item = Key<T, V>>, T: PartialOrd {
     Self::from_vec(iter.collect())
   }
@@ -159,7 +159,7 @@ impl<T, V> Spline<T, V> {
     })
   }
 
-  /// Remove a ke from the spline.
+  /// Remove a key from the spline.
   pub fn remove(&mut self, index: usize) -> Option<Key<T, V>> {
     if index >= self.0.len() {
       None
