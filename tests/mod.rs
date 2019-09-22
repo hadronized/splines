@@ -174,6 +174,30 @@ fn nalgebra_vector_interpolation() {
 }
 
 #[test]
+fn add_key_empty() {
+  let mut spline: Spline<f32, f32> = Spline::from_vec(vec![]);
+  spline.add(Key::new(0., 0., Interpolation::Linear));
+
+  assert_eq!(spline.keys(), &[Key::new(0., 0., Interpolation::Linear)]);
+}
+
+#[test]
+fn add_key() {
+  let start = Key::new(0., 0., Interpolation::Step(0.5));
+  let k1 = Key::new(1., 5., Interpolation::Linear);
+  let k2 = Key::new(2., 0., Interpolation::Step(0.1));
+  let k3 = Key::new(3., 1., Interpolation::Linear);
+  let k4 = Key::new(10., 2., Interpolation::Linear);
+  let end = Key::new(11., 4., Interpolation::default());
+  let new = Key::new(2.4, 40., Interpolation::Linear);
+  let mut spline = Spline::from_vec(vec![start, k1, k2.clone(), k3, k4, end]);
+
+  assert_eq!(spline.keys(), &[start, k1, k2, k3, k4, end]);
+  spline.add(new);
+  assert_eq!(spline.keys(), &[start, k1, k2, new, k3, k4, end]);
+}
+
+#[test]
 fn remove_element_empty() {
   let mut spline: Spline<f32, f32> = Spline::from_vec(vec![]);
   let removed = spline.remove(0);
