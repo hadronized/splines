@@ -28,12 +28,17 @@ use crate::key::Key;
 pub struct Spline<T, V>(pub(crate) Vec<Key<T, V>>);
 
 impl<T, V> Spline<T, V> {
+  /// Internal sort to ensure invariant of sorting keys is valid.
+  fn internal_sort(&mut self) where T: PartialOrd {
+    self.0.sort_by(|k0, k1| k0.t.partial_cmp(&k1.t).unwrap_or(Ordering::Less));
+  }
+
   /// Create a new spline out of keys. The keys don’t have to be sorted even though it’s recommended
   /// to provide ascending sorted ones (for performance purposes).
-  pub fn from_vec(mut keys: Vec<Key<T, V>>) -> Self where T: PartialOrd {
-    keys.sort_by(|k0, k1| k0.t.partial_cmp(&k1.t).unwrap_or(Ordering::Less));
-
-    Spline(keys)
+  pub fn from_vec(keys: Vec<Key<T, V>>) -> Self where T: PartialOrd {
+    let mut spline = Spline(keys);
+    spline.internal_sort();
+    spline
   }
 
   /// Create a new spline by consuming an `Iterater<Item = Key<T>>`. They keys don’t have to be
@@ -157,6 +162,12 @@ impl<T, V> Spline<T, V> {
         }
       }
     })
+  }
+
+  /// Add a key into the spline.
+  pub fn add(&mut self, key: Key<T, V>) where T: PartialOrd {
+    self.0.push(key);
+    self.internal_sort();
   }
 
   /// Remove a key from the spline.
