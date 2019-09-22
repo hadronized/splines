@@ -1,6 +1,6 @@
 [package]
 name = "splines"
-version = "1.0.0-rc.3"
+version = "1.0.0"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"
@@ -33,3 +33,6 @@ nalgebra = { version = ">=0.14, <0.19", optional = true }
 num-traits = { version = "0.2", optional = true }
 serde =  { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
+
+[package.metadata.docs.rs]
+all-features = true
