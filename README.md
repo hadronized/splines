@@ -84,19 +84,27 @@ not. It’s especially important to see how it copes with the documentation.
 So here’s a list of currently supported features and how to enable them:
 
   - **Serialization / deserialization.**
-    + This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
+    - This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
       types exported by this crate.
-    + Enable with the `"serialization"` feature.
+    - Enable with the `"serialization"` feature.
   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
-    + Adds some useful implementations of `Interpolate` for some cgmath types.
-    + Enable with the `"impl-cgmath"` feature.
+    - Adds some useful implementations of `Interpolate` for some cgmath types.
+    - Enable with the `"impl-cgmath"` feature.
   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
-    + Adds some useful implementations of `Interpolate` for some nalgebra types.
-    + Enable with the `"impl-nalgebra"` feature.
+    - Adds some useful implementations of `Interpolate` for some nalgebra types.
+    - Enable with the `"impl-nalgebra"` feature.
   - **Standard library / no standard library.**
-    + It’s possible to compile against the standard library or go on your own without it.
-    + Compiling with the standard library is enabled by default.
-    + Use `default-features = []` in your `Cargo.toml` to disable.
-    + Enable explicitly with the `"std"` feature.
+    - It’s possible to compile against the standard library or go on your own without it.
+    - Compiling with the standard library is enabled by default.
+    - Use `default-features = []` in your `Cargo.toml` to disable.
+    - Enable explicitly with the `"std"` feature.
+  - **Extra interpolation modes.**
+    - In order not to introduce breaking changes, some feature-gates are added to augment the
+      [`Interpolation`] enum.
+    - Those feature-gates will disappear on the next major release of the crate.
+    - The following lists all currently available:
+      - `"bezier"`: [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+
+[`Interpolation`]: crate::interpolation::Interpolation
 
 <!-- cargo-sync-readme end -->
