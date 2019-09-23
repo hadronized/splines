@@ -146,9 +146,6 @@ impl<T, V> Spline<T, V> {
           Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
         }
       }
-
-      #[cfg(not(any(feature = "bezier")))]
-      Interpolation::_V(_) => unreachable!()
     }
   }
 
@@ -246,7 +243,10 @@ pub struct KeyMut<'a, T, V> {
   /// Carried value.
   pub value: &'a mut V,
   /// Interpolation mode to use for that key.
+  #[cfg(feature = "bezier")]
   pub interpolation: &'a mut Interpolation<T, V>,
+  #[cfg(not(feature = "bezier"))]
+  pub interpolation: &'a mut Interpolation<T>,
 }
 
 // Normalize a time ([0;1]) given two control points.
