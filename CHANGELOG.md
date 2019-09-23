@@ -1,6 +1,12 @@
+# 1.1
+
+> Mon Sep 22rd 2019
+
+- Yanked.
+
 # 1.0
 
-> Sun Sep 22th 2019
+> Sun Sep 22nd 2019
 
 ## Major changes
 
