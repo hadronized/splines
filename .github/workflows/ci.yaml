@@ -10,7 +10,6 @@ jobs:
         run: |
           cargo build --verbose
           cargo build --verbose --features bezier
-        run: cargo build --verbose
       - name: Test
         run: |
           cargo test --verbose
@@ -24,7 +23,6 @@ jobs:
         run: |
           cargo build --verbose
           cargo build --verbose --features bezier
-        run: cargo build --verbose
       - name: Test
         run: |
           cargo test --verbose
@@ -38,7 +36,6 @@ jobs:
         run: |
           cargo build --verbose
           cargo build --verbose --features bezier
-        run: cargo build --verbose
       - name: Test
         run: |
           cargo test --verbose
