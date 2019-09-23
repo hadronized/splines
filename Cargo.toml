@@ -1,6 +1,6 @@
 [package]
 name = "splines"
-version = "1.0.0"
+version = "1.1.0"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"
@@ -21,6 +21,7 @@ maintenance = { status = "actively-developed" }
 
 [features]
 default = ["std"]
+bezier = []
 impl-cgmath = ["cgmath"]
 impl-nalgebra = ["alga", "nalgebra", "num-traits"]
 serialization = ["serde", "serde_derive"]

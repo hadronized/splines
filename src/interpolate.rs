@@ -57,6 +57,12 @@ pub trait Interpolate<T>: Sized + Copy {
   fn cubic_hermite(_: (Self, T), a: (Self, T), b: (Self, T), _: (Self, T), t: T) -> Self {
     Self::lerp(a.0, b.0, t)
   }
+
+  /// Quadratic Bézier interpolation.
+  fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self;
+
+  /// Cubic Bézier interpolation.
+  fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self;
 }
 
 /// Set of types that support additions and subtraction.
@@ -212,6 +218,31 @@ where V: Linear<T>,
   a.0.outer_mul(two_t3 - three_t2 + one_t) + m0.outer_mul(t3 - t2 * two_t + t) + b.0.outer_mul(three_t2 - two_t3) + m1.outer_mul(t3 - t2)
 }
 
+/// Default implementation of [`Interpolate::quadratic_bezier`].
+///
+/// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
+pub fn quadratic_bezier_def<V, T>(a: V, u: V, b: V, t: T) -> V
+where V: Linear<T>,
+      T: Additive + Mul<T, Output = T> + One {
+  let one_t = T::one() - t;
+  let one_t_2 = one_t * one_t;
+  u + (a - u).outer_mul(one_t_2) + (b - u).outer_mul(t * t)
+}
+
+/// Default implementation of [`Interpolate::cubic_bezier`].
+///
+/// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
+pub fn cubic_bezier_def<V, T>(a: V, u: V, v: V, b: V, t: T) -> V
+where V: Linear<T>,
+      T: Additive + Mul<T, Output = T> + One {
+  let one_t = T::one() - t;
+  let one_t_2 = one_t * one_t;
+  let one_t_3 = one_t_2 * one_t;
+  let three = T::one() + T::one() + T::one();
+
+  a.outer_mul(one_t_3) + u.outer_mul(three * one_t_2 * t) + v.outer_mul(three * one_t * t * t) + b.outer_mul(t * t * t)
+}
+
 macro_rules! impl_interpolate_simple {
   ($t:ty) => {
     impl Interpolate<$t> for $t {
@@ -222,6 +253,14 @@ macro_rules! impl_interpolate_simple {
       fn cubic_hermite(x: (Self, $t), a: (Self, $t), b: (Self, $t), y: (Self, $t), t: $t) -> Self {
         cubic_hermite_def(x, a, b, y, t)
       }
+
+      fn quadratic_bezier(a: Self, u: Self, b: Self, t: $t) -> Self {
+        quadratic_bezier_def(a, u, b, t)
+      }
+
+      fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: $t) -> Self {
+        cubic_bezier_def(a, u, v, b, t)
+      }
     }
   }
 }
@@ -229,19 +268,27 @@ macro_rules! impl_interpolate_simple {
 impl_interpolate_simple!(f32);
 impl_interpolate_simple!(f64);
 
-macro_rules! impl_interpolate_via {
-  ($t:ty, $v:ty) => {
-    impl Interpolate<$t> for $v {
-      fn lerp(a: Self, b: Self, t: $t) -> Self {
-        a * (1. - t as $v) + b * t as $v
-      }
-
-      fn cubic_hermite((x, xt): (Self, $t), (a, at): (Self, $t), (b, bt): (Self, $t), (y, yt): (Self, $t), t: $t) -> Self {
-        cubic_hermite_def((x, xt as $v), (a, at as $v), (b, bt as $v), (y, yt as $v), t as $v)
-      }
-    }
-  }
-}
-
-impl_interpolate_via!(f32, f64);
-impl_interpolate_via!(f64, f32);
+//macro_rules! impl_interpolate_via {
+//  ($t:ty, $v:ty) => {
+//    impl Interpolate<$t> for $v {
+//      fn lerp(a: Self, b: Self, t: $t) -> Self {
+//        a * (1. - t as $v) + b * t as $v
+//      }
+//
+//      fn cubic_hermite((x, xt): (Self, $t), (a, at): (Self, $t), (b, bt): (Self, $t), (y, yt): (Self, $t), t: $t) -> Self {
+//        cubic_hermite_def((x, xt as $v), (a, at as $v), (b, bt as $v), (y, yt as $v), t as $v)
+//      }
+//
+//      fn quadratic_bezier(a: Self, u: Self, b: Self, t: $t) -> Self {
+//        $t::quadratic_bezier(a as $t, u as $t, b as $t, t)
+//      }
+//
+//      fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: $t) -> Self {
+//        $t::cubic_bezier(a as $t, u as $t, v as $t, b as $t, t)
+//      }
+//    }
+//  }
+//}
+//
+//impl_interpolate_via!(f32, f64);
+//impl_interpolate_via!(f64, f32);
