@@ -146,9 +146,6 @@ impl<T, V> Spline<T, V> {
           Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
         }
       }
-
-      #[cfg(not(any(feature = "bezier")))]
-      Interpolation::_V(_) => unreachable!()
     }
   }
 
@@ -199,6 +196,57 @@ impl<T, V> Spline<T, V> {
       Some(self.0.remove(index))
     }
   }
+
+  /// Update a key and return the key already present.
+  ///
+  /// The key is updated — if present — with the provided function.
+  ///
+  /// # Notes
+  ///
+  /// That function makes sense only if you want to change the interpolator (i.e. [`Key::t`]) of
+  /// your key. If you just want to change the interpolation mode or the carried value, consider
+  /// using the [`Spline::get_mut`] method instead as it will be way faster.
+  pub fn replace<F>(
+    &mut self,
+    index: usize,
+    f: F
+  ) -> Option<Key<T, V>>
+  where
+    F: FnOnce(&Key<T, V>) -> Key<T, V>,
+    T: PartialOrd
+  {
+    let key = self.remove(index)?;
+    self.add(f(&key));
+    Some(key)
+  }
+
+  /// Get a key at a given index.
+  pub fn get(&self, index: usize) -> Option<&Key<T, V>> {
+    self.0.get(index)
+  }
+
+  /// Mutably get a key at a given index.
+  pub fn get_mut(&mut self, index: usize) -> Option<KeyMut<T, V>> {
+    self.0.get_mut(index).map(|key| KeyMut {
+      value: &mut key.value,
+      interpolation: &mut key.interpolation
+    })
+  }
+}
+
+/// A mutable [`Key`].
+///
+/// Mutable keys allow to edit the carried values and the interpolation mode but not the actual
+/// interpolator value as it would invalidate the internal structure of the [`Spline`]. If you
+/// want to achieve this, you’re advised to use [`Spline::replace`].
+pub struct KeyMut<'a, T, V> {
+  /// Carried value.
+  pub value: &'a mut V,
+  /// Interpolation mode to use for that key.
+  #[cfg(feature = "bezier")]
+  pub interpolation: &'a mut Interpolation<T, V>,
+  #[cfg(not(feature = "bezier"))]
+  pub interpolation: &'a mut Interpolation<T>,
 }
 
 // Normalize a time ([0;1]) given two control points.

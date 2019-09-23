@@ -2,7 +2,9 @@ use cgmath::{
   BaseFloat, BaseNum, InnerSpace, Quaternion, Vector1, Vector2, Vector3, Vector4, VectorSpace
 };
 
-use crate::interpolate::{Additive, Interpolate, Linear, One, cubic_hermite_def};
+use crate::interpolate::{
+  Additive, Interpolate, Linear, One, cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def
+};
 
 macro_rules! impl_interpolate_vec {
   ($($t:tt)*) => {
@@ -28,6 +30,18 @@ macro_rules! impl_interpolate_vec {
       #[inline(always)]
       fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
         cubic_hermite_def(x, a, b, y, t)
+      }
+
+      #[cfg(feature = "bezier")]
+      #[inline(always)]
+      fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self {
+        quadratic_bezier_def(a, u, b, t)
+      }
+
+      #[cfg(feature = "bezier")]
+      #[inline(always)]
+      fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self {
+        cubic_bezier_def(a, u, v, b, t)
       }
     }
   }
@@ -60,5 +74,17 @@ where Self: InnerSpace<Scalar = T>, T: Additive + BaseFloat + One {
   #[inline(always)]
   fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
     cubic_hermite_def(x, a, b, y, t)
+  }
+
+  #[cfg(feature = "bezier")]
+  #[inline(always)]
+  fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self {
+    quadratic_bezier_def(a, u, b, t)
+  }
+
+  #[cfg(feature = "bezier")]
+  #[inline(always)]
+  fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self {
+    cubic_bezier_def(a, u, v, b, t)
   }
 }
