@@ -21,6 +21,7 @@ maintenance = { status = "actively-developed" }
 
 [features]
 default = ["std"]
+bezier = []
 impl-cgmath = ["cgmath"]
 impl-nalgebra = ["alga", "nalgebra", "num-traits"]
 serialization = ["serde", "serde_derive"]

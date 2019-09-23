@@ -93,13 +93,13 @@ impl<T, V> Spline<T, V> {
 
     match cp0.interpolation {
       Interpolation::Step(threshold) => {
-        let cp1 = &keys[i+1];
+        let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
         Some(if nt < threshold { cp0.value } else { cp1.value })
       }
 
       Interpolation::Linear => {
-        let cp1 = &keys[i+1];
+        let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
 
         Some(Interpolate::lerp(cp0.value, cp1.value, nt))
@@ -107,7 +107,7 @@ impl<T, V> Spline<T, V> {
 
       Interpolation::Cosine => {
         let two_t = T::one() + T::one();
-        let cp1 = &keys[i+1];
+        let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
         let cos_nt = (T::one() - (nt * T::pi()).cos()) / two_t;
 
@@ -120,14 +120,35 @@ impl<T, V> Spline<T, V> {
         if i == 0 || i >= keys.len() - 2 {
           None
         } else {
-          let cp1 = &keys[i+1];
-          let cpm0 = &keys[i-1];
-          let cpm1 = &keys[i+2];
+          let cp1 = &keys[i + 1];
+          let cpm0 = &keys[i - 1];
+          let cpm1 = &keys[i + 2];
           let nt = normalize_time(t, cp0, cp1);
 
           Some(Interpolate::cubic_hermite((cpm0.value, cpm0.t), (cp0.value, cp0.t), (cp1.value, cp1.t), (cpm1.value, cpm1.t), nt))
         }
       }
+
+      #[cfg(feature = "bezier")]
+      Interpolation::Bezier(u) => {
+        // We need to check the next control point to see whether we want quadratic or cubic Bezier.
+        let cp1 = &keys[i + 1];
+        let nt = normalize_time(t, cp0, cp1);
+
+        if let Interpolation::Bezier(v) = cp1.interpolation {
+          Some(Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt))
+          //let one_nt = T::one() - nt;
+          //let one_nt_2 = one_nt * one_nt;
+          //let one_nt_3 = one_nt_2 * one_nt;
+          //let three_one_nt_2 = one_nt_2 + one_nt_2 + one_nt_2; // one_nt_2 * 3
+          //let r = cp0.value * one_nt_3;
+        } else {
+          Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
+        }
+      }
+
+      #[cfg(not(any(feature = "bezier")))]
+      Interpolation::_V(_) => unreachable!()
     }
   }
 

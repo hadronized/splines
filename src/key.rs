@@ -26,12 +26,12 @@ pub struct Key<T, V> {
   /// Carried value.
   pub value: V,
   /// Interpolation mode.
-  pub interpolation: Interpolation<T>
+  pub interpolation: Interpolation<T, V>
 }
 
 impl<T, V> Key<T, V> {
   /// Create a new key.
-  pub fn new(t: T, value: V, interpolation: Interpolation<T>) -> Self {
+  pub fn new(t: T, value: V, interpolation: Interpolation<T, V>) -> Self {
     Key { t, value, interpolation }
   }
 }

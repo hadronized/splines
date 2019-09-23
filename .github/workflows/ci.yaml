@@ -7,27 +7,42 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
+        run: |
+          cargo build --verbose
+          cargo build --verbose --features bezier
         run: cargo build --verbose
       - name: Test
-        run: cargo test --verbose
+        run: |
+          cargo test --verbose
+          cargo test --verbose --features bezier
 
   build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
       - name: Build
+        run: |
+          cargo build --verbose
+          cargo build --verbose --features bezier
         run: cargo build --verbose
       - name: Test
-        run: cargo test --verbose
+        run: |
+          cargo test --verbose
+          cargo test --verbose --features bezier
 
   build-macosx:
     runs-on: macosx-latest
     steps:
       - uses: actions/checkout@v1
       - name: Build
+        run: |
+          cargo build --verbose
+          cargo build --verbose --features bezier
         run: cargo build --verbose
       - name: Test
-        run: cargo test --verbose
+        run: |
+          cargo test --verbose
+          cargo test --verbose --features bezier
 
   check-readme:
     runs-on: ubuntu-latest
