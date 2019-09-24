@@ -8,12 +8,11 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build
         run: |
-          cargo build --verbose
-          cargo build --verbose --features bezier
+          cargo build --verbose --all-features
       - name: Test
         run: |
-          cargo test --verbose
-          cargo test --verbose --features bezier
+          cargo test --verbose --all-features
+
 
   build-windows:
     runs-on: windows-latest
@@ -21,12 +20,10 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build
         run: |
-          cargo build --verbose
-          cargo build --verbose --features bezier
+          cargo build --verbose --all-features
       - name: Test
         run: |
-          cargo test --verbose
-          cargo test --verbose --features bezier
+          cargo test --verbose --all-features
 
   build-macosx:
     runs-on: macosx-latest
@@ -34,12 +31,10 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build
         run: |
-          cargo build --verbose
-          cargo build --verbose --features bezier
+          cargo build --verbose --all-features
       - name: Test
         run: |
-          cargo test --verbose
-          cargo test --verbose --features bezier
+          cargo test --verbose --all-features
 
   check-readme:
     runs-on: ubuntu-latest
