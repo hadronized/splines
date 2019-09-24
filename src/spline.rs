@@ -129,7 +129,6 @@ impl<T, V> Spline<T, V> {
         }
       }
 
-      #[cfg(feature = "bezier")]
       Interpolation::Bezier(u) => {
         // We need to check the next control point to see whether we want quadratic or cubic Bezier.
         let cp1 = &keys[i + 1];
@@ -146,6 +145,8 @@ impl<T, V> Spline<T, V> {
           Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
         }
       }
+
+      Interpolation::__NonExhaustive => unreachable!(),
     }
   }
 
@@ -243,10 +244,7 @@ pub struct KeyMut<'a, T, V> {
   /// Carried value.
   pub value: &'a mut V,
   /// Interpolation mode to use for that key.
-  #[cfg(feature = "bezier")]
   pub interpolation: &'a mut Interpolation<T, V>,
-  #[cfg(not(feature = "bezier"))]
-  pub interpolation: &'a mut Interpolation<T>,
 }
 
 // Normalize a time ([0;1]) given two control points.

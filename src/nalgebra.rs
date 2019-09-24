@@ -43,13 +43,11 @@ macro_rules! impl_interpolate_vector {
         cubic_hermite_def(x, a, b, y, t)
       }
 
-      #[cfg(feature = "bezier")]
       #[inline(always)]
       fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self {
         quadratic_bezier_def(a, u, b, t)
       }
 
-      #[cfg(feature = "bezier")]
       #[inline(always)]
       fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self {
         cubic_bezier_def(a, u, v, b, t)
