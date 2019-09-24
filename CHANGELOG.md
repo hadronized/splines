@@ -1,6 +1,13 @@
+# 2.0.1
+
+> Tue Sep 24th 2019
+
+- Fix the cubic Bézier curve interpolation. The “output” tangent is now taken by mirroring the
+  next key’s tangent around its control point.
+
 # 2.0.0
 
-> Mon Sep 24th 2019
+> Mon Sep 23rd 2019
 
 ## Major changes
 

@@ -136,11 +136,6 @@ impl<T, V> Spline<T, V> {
 
         if let Interpolation::Bezier(v) = cp1.interpolation {
           Some(Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt))
-          //let one_nt = T::one() - nt;
-          //let one_nt_2 = one_nt * one_nt;
-          //let one_nt_3 = one_nt_2 * one_nt;
-          //let three_one_nt_2 = one_nt_2 + one_nt_2 + one_nt_2; // one_nt_2 * 3
-          //let r = cp0.value * one_nt_3;
         } else {
           Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
         }
