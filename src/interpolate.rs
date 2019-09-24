@@ -59,11 +59,9 @@ pub trait Interpolate<T>: Sized + Copy {
   }
 
   /// Quadratic Bézier interpolation.
-  #[cfg(feature = "bezier")]
   fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self;
 
   /// Cubic Bézier interpolation.
-  #[cfg(feature = "bezier")]
   fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self;
 }
 
@@ -223,7 +221,6 @@ where V: Linear<T>,
 /// Default implementation of [`Interpolate::quadratic_bezier`].
 ///
 /// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
-#[cfg(feature = "bezier")]
 pub fn quadratic_bezier_def<V, T>(a: V, u: V, b: V, t: T) -> V
 where V: Linear<T>,
       T: Additive + Mul<T, Output = T> + One {
@@ -235,7 +232,6 @@ where V: Linear<T>,
 /// Default implementation of [`Interpolate::cubic_bezier`].
 ///
 /// `V` is the value being interpolated. `T` is the sampling value (also sometimes called time).
-#[cfg(feature = "bezier")]
 pub fn cubic_bezier_def<V, T>(a: V, u: V, v: V, b: V, t: T) -> V
 where V: Linear<T>,
       T: Additive + Mul<T, Output = T> + One {
@@ -258,12 +254,10 @@ macro_rules! impl_interpolate_simple {
         cubic_hermite_def(x, a, b, y, t)
       }
 
-      #[cfg(feature = "bezier")]
       fn quadratic_bezier(a: Self, u: Self, b: Self, t: $t) -> Self {
         quadratic_bezier_def(a, u, b, t)
       }
 
-      #[cfg(feature = "bezier")]
       fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: $t) -> Self {
         cubic_bezier_def(a, u, v, b, t)
       }
@@ -285,12 +279,10 @@ macro_rules! impl_interpolate_via {
         cubic_hermite_def((x, xt as $v), (a, at as $v), (b, bt as $v), (y, yt as $v), t as $v)
       }
 
-      #[cfg(feature = "bezier")]
       fn quadratic_bezier(a: Self, u: Self, b: Self, t: $t) -> Self {
         quadratic_bezier_def(a, u, b, t as $v)
       }
 
-      #[cfg(feature = "bezier")]
       fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: $t) -> Self {
         cubic_bezier_def(a, u, v, b, t as $v)
       }

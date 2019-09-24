@@ -98,12 +98,6 @@ So here’s a list of currently supported features and how to enable them:
     - Compiling with the standard library is enabled by default.
     - Use `default-features = []` in your `Cargo.toml` to disable.
     - Enable explicitly with the `"std"` feature.
-  - **Extra interpolation modes.**
-    - In order not to introduce breaking changes, some feature-gates are added to augment the
-      [`Interpolation`] enum.
-    - Those feature-gates will disappear on the next major release of the crate.
-    - The following lists all currently available:
-      - `"bezier"`: [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve).
 
 [`Interpolation`]: crate::interpolation::Interpolation
 

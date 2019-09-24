@@ -1,10 +1,15 @@
-# 1.1.1
+# 2.0.0
 
-> Mon Sep 22rd 2019
+> Mon Sep 24th 2019
 
-- Add support for [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve). This is
-  normally a breaking change so it’s currently disabled by default and available via the
-  `"bezier"` feature-gate.
+## Major changes
+
+- Add support for [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+- Because of Bézier curves, the `Interpolation` type now has one more type variable to know how we
+  should interpolate with Bézier.
+
+## Minor changes
+
 - Add `Spline::get`, `Spline::get_mut` and `Spline::replace`.
 
 # 1.0
