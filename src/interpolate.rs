@@ -240,7 +240,10 @@ where V: Linear<T>,
   let one_t_3 = one_t_2 * one_t;
   let three = T::one() + T::one() + T::one();
 
-  a.outer_mul(one_t_3) + u.outer_mul(three * one_t_2 * t) + v.outer_mul(three * one_t * t * t) + b.outer_mul(t * t * t)
+  // mirror the “output” tangent based on the next key “input” tangent
+  let v_ = b + b - v;
+
+  a.outer_mul(one_t_3) + u.outer_mul(three * one_t_2 * t) + v_.outer_mul(three * one_t * t * t) + b.outer_mul(t * t * t)
 }
 
 macro_rules! impl_interpolate_simple {
