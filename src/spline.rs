@@ -69,7 +69,8 @@ impl<T, V> Spline<T, V> {
     self.0.is_empty()
   }
 
-  /// Sample a spline at a given time.
+  /// Sample a spline at a given time, returning the interpolated value along with its associated
+  /// key.
   ///
   /// The current implementation, based on immutability, cannot perform in constant time. This means
   /// that sampling’s processing complexity is currently *O(log n)*. It’s possible to achieve *O(1)*
@@ -84,7 +85,7 @@ impl<T, V> Spline<T, V> {
   /// you’re near the beginning of the spline or its end, ensure you have enough keys around to make
   /// the sampling.
   ///
-  pub fn sample(&self, t: T) -> Option<V>
+  pub fn sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
         V: Interpolate<T> {
     let keys = &self.0;
@@ -95,14 +96,17 @@ impl<T, V> Spline<T, V> {
       Interpolation::Step(threshold) => {
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
-        Some(if nt < threshold { cp0.value } else { cp1.value })
+        let value = if nt < threshold { cp0.value } else { cp1.value };
+
+        Some((value, cp0, Some(cp1)))
       }
 
       Interpolation::Linear => {
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
+        let value = Interpolate::lerp(cp0.value, cp1.value, nt);
 
-        Some(Interpolate::lerp(cp0.value, cp1.value, nt))
+        Some((value, cp0, Some(cp1)))
       }
 
       Interpolation::Cosine => {
@@ -110,8 +114,9 @@ impl<T, V> Spline<T, V> {
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
         let cos_nt = (T::one() - (nt * T::pi()).cos()) / two_t;
+        let value = Interpolate::lerp(cp0.value, cp1.value, cos_nt);
 
-        Some(Interpolate::lerp(cp0.value, cp1.value, cos_nt))
+        Some((value, cp0, Some(cp1)))
       }
 
       Interpolation::CatmullRom => {
@@ -124,8 +129,9 @@ impl<T, V> Spline<T, V> {
           let cpm0 = &keys[i - 1];
           let cpm1 = &keys[i + 2];
           let nt = normalize_time(t, cp0, cp1);
+          let value = Interpolate::cubic_hermite((cpm0.value, cpm0.t), (cp0.value, cp0.t), (cp1.value, cp1.t), (cpm1.value, cpm1.t), nt);
 
-          Some(Interpolate::cubic_hermite((cpm0.value, cpm0.t), (cp0.value, cp0.t), (cp1.value, cp1.t), (cpm1.value, cpm1.t), nt))
+          Some((value, cp0, Some(cp1)))
         }
       }
 
@@ -134,18 +140,30 @@ impl<T, V> Spline<T, V> {
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
 
-        if let Interpolation::Bezier(v) = cp1.interpolation {
-          Some(Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt))
-        } else {
-          Some(Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt))
-        }
+        let value =
+          if let Interpolation::Bezier(v) = cp1.interpolation {
+            Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt)
+          } else {
+            Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt)
+          };
+
+        Some((value, cp0, Some(cp1)))
       }
 
       Interpolation::__NonExhaustive => unreachable!(),
     }
   }
 
-  /// Sample a spline at a given time with clamping.
+  /// Sample a spline at a given time.
+  ///
+  pub fn sample(&self, t: T) -> Option<V>
+  where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
+        V: Interpolate<T> {
+    self.sample_with_key(t).map(|(v, _, _)| v)
+  }
+
+  /// Sample a spline at a given time with clamping, returning the interpolated value along with its
+  /// associated key.
   ///
   /// # Return
   ///
@@ -155,27 +173,35 @@ impl<T, V> Spline<T, V> {
   /// # Error
   ///
   /// This function returns [`None`] if you have no key.
-  pub fn clamped_sample(&self, t: T) -> Option<V>
+  pub fn clamped_sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
         V: Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
 
-    self.sample(t).or_else(move || {
+    self.sample_with_key(t).or_else(move || {
       let first = self.0.first().unwrap();
       if t <= first.t {
-        Some(first.value)
+        let second = if self.0.len() >= 2 { Some(&self.0[1]) } else { None };
+        Some((first.value, &first, second))
       } else {
         let last = self.0.last().unwrap();
 
         if t >= last.t {
-          Some(last.value)
+          Some((last.value, &last, None))
         } else {
           None
         }
       }
     })
+  }
+
+  /// Sample a spline at a given time with clamping.
+  pub fn clamped_sample(&self, t: T) -> Option<V>
+  where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
+        V: Interpolate<T> {
+    self.clamped_sample_with_key(t).map(|(v, _, _)| v)
   }
 
   /// Add a key into the spline.

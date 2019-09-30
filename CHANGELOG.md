@@ -1,3 +1,12 @@
+# 2.1
+
+> Mon Sep 30th 2019
+
+- Add `Spline::sample_with_key` and `Spline::clamped_sample_with_key`. Those methods allow one to
+  perform the regular `Spline::sample` and `Spline::clamped_sample` but also retreive the base
+  key that was used to perform the interpolation. The key can be inspected to get the base time,
+  interpolation, etc. The next key is also returned, if present.
+
 # 2.0.1
 
 > Tue Sep 24th 2019

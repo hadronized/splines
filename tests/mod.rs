@@ -16,6 +16,8 @@ fn step_interpolation_f32() {
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
   assert_eq!(spline.clamped_sample(1.), Some(10.));
+  assert_eq!(spline.sample_with_key(0.2), Some((10., &start, Some(&end))));
+  assert_eq!(spline.clamped_sample_with_key(1.), Some((10., &end, None)));
 }
 
 #[test]
@@ -31,6 +33,8 @@ fn step_interpolation_f64() {
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
   assert_eq!(spline.clamped_sample(1.), Some(10.));
+  assert_eq!(spline.sample_with_key(0.2), Some((10., &start, Some(&end))));
+  assert_eq!(spline.clamped_sample_with_key(1.), Some((10., &end, None)));
 }
 
 #[test]
