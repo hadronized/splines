@@ -40,6 +40,18 @@ pub enum Interpolation<T, V> {
   ///   point and the current control point’s associated point. This is called _quadratic Bézer
   ///   interpolation_ and it kicks ass too, but a bit less than cubic.
   Bezier(V),
+  /// A special Bézier interpolation using an _input tangent_ and an _output tangent_.
+  ///
+  /// With this kind of interpolation, a control point has an input tangent, which has the same role
+  /// as the one defined by [`Interpolation::Bezier`], and an output tangent, which has the same
+  /// role defined by the next key’s [`Interpolation::Bezier`] if present, normally.
+  ///
+  /// What it means is that instead of setting the output tangent as the next key’s Bézier tangent,
+  /// this interpolation mode allows you to manually set the output tangent. That will yield more
+  /// control on the tangents but might generate discontinuities. Use with care.
+  ///
+  /// Stroke Bézier interpolation is always a cubic Bézier interpolation by default.
+  StrokeBezier(V, V),
   #[doc(hidden)]
   __NonExhaustive
 }

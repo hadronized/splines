@@ -84,7 +84,6 @@ impl<T, V> Spline<T, V> {
   /// sampling impossible. For instance, [`Interpolation::CatmullRom`] requires *four* keys. If
   /// you’re near the beginning of the spline or its end, ensure you have enough keys around to make
   /// the sampling.
-  ///
   pub fn sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
         V: Interpolate<T> {
@@ -146,6 +145,14 @@ impl<T, V> Spline<T, V> {
           } else {
             Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt)
           };
+
+        Some((value, cp0, Some(cp1)))
+      }
+
+      Interpolation::StrokeBezier(input, output) => {
+        let cp1 = &keys[i + 1];
+        let nt = normalize_time(t, cp0, cp1);
+        let value = Interpolate::cubic_bezier(cp0.value, input, output, cp1.value, nt);
 
         Some((value, cp0, Some(cp1)))
       }

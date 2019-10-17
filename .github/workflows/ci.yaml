@@ -26,14 +26,18 @@ jobs:
           cargo test --verbose --all-features
 
   build-macosx:
-    runs-on: macosx-latest
+    runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Rust requirements
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal
       - name: Build
         run: |
+          . ~/.cargo/env
           cargo build --verbose --all-features
       - name: Test
         run: |
+          . ~/.cargo/env
           cargo test --verbose --all-features
 
   check-readme:
