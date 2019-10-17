@@ -1,3 +1,15 @@
+# 2.2.0
+
+> Mon Oct 17th 2019
+
+- Add `Interpolation::StrokeBezier`.
+
+# 2.1.1
+
+> Mon Oct 17th 2019
+
+- Licensing support in the crate.
+
 # 2.1
 
 > Mon Sep 30th 2019
