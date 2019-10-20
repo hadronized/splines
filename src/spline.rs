@@ -163,7 +163,7 @@ impl<T, V> Spline<T, V> {
   ///
   pub fn sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     self.sample_with_key(t).map(|(v, _, _)| v)
   }
 
@@ -180,7 +180,7 @@ impl<T, V> Spline<T, V> {
   /// This function returns [`None`] if you have no key.
   pub fn clamped_sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
@@ -205,7 +205,7 @@ impl<T, V> Spline<T, V> {
   /// Sample a spline at a given time with clamping.
   pub fn clamped_sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     self.clamped_sample_with_key(t).map(|(v, _, _)| v)
   }
 
