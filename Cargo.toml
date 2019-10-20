@@ -1,6 +1,6 @@
 [package]
 name = "splines"
-version = "2.2.0"
+version = "3.0.0"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"

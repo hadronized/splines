@@ -1,3 +1,16 @@
+# 3.0.0
+
+> Sun Oct 20th 2019
+
+## Major changes
+
+- Sampling now requires the value of the key to be `Linear<T>` for `Interpolate<T>`. That is needed
+  to ease some interpolation mode (especially Bézier).
+
+## Patch changes
+
+- Fix Bézier interpolation when the next key is Bézier too.
+
 # 2.2.0
 
 > Mon Oct 17th 2019
