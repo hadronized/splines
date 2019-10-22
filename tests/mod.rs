@@ -1,7 +1,8 @@
+use float_cmp::approx_eq;
 use splines::{Interpolation, Key, Spline};
 
-#[cfg(feature = "impl-cgmath")] use cgmath as cg;
-#[cfg(feature = "impl-nalgebra")] use nalgebra as na;
+#[cfg(feature = "cgmath")] use cgmath as cg;
+#[cfg(feature = "nalgebra")] use nalgebra as na;
 
 #[test]
 fn step_interpolation_f32() {
@@ -149,7 +150,24 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.clamped_sample(11.), Some(4.));
 }
 
-#[cfg(feature = "impl-cgmath")]
+#[cfg(feature = "cgmath")]
+#[test]
+fn stroke_bezier_straight() {
+  let keys = vec![
+    Key::new(0.0, cg::Vector2::new(0., 1.), Interpolation::StrokeBezier(cg::Vector2::new(0., 1.), cg::Vector2::new(0., 1.))),
+    Key::new(5.0, cg::Vector2::new(5., 1.), Interpolation::StrokeBezier(cg::Vector2::new(5., 1.), cg::Vector2::new(5., 1.)))
+  ];
+  let spline = Spline::from_vec(keys);
+
+  assert!(approx_eq!(f32, spline.clamped_sample(0.0).unwrap().y, 1.));
+  assert!(approx_eq!(f32, spline.clamped_sample(1.0).unwrap().y, 1.));
+  assert!(approx_eq!(f32, spline.clamped_sample(2.0).unwrap().y, 1.));
+  assert!(approx_eq!(f32, spline.clamped_sample(3.0).unwrap().y, 1.));
+  assert!(approx_eq!(f32, spline.clamped_sample(4.0).unwrap().y, 1.));
+  assert!(approx_eq!(f32, spline.clamped_sample(5.0).unwrap().y, 1.));
+}
+
+#[cfg(feature = "cgmath")]
 #[test]
 fn cgmath_vector_interpolation() {
   use splines::Interpolate;
@@ -163,7 +181,7 @@ fn cgmath_vector_interpolation() {
   assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
 }
 
-#[cfg(feature = "impl-nalgebra")]
+#[cfg(feature = "nalgebra")]
 #[test]
 fn nalgebra_vector_interpolation() {
   use splines::Interpolate;

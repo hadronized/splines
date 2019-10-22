@@ -1,9 +1,0 @@
-[workspace]
-
-members = [
-  "01-hello-world",
-  "02-serialization"
-]
-
-[patch.crates-io]
-splines = { path = ".." }

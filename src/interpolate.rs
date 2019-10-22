@@ -45,7 +45,7 @@
 /// instance to know which trait your type must implement to be usable.
 ///
 /// [`Spline::sample`]: crate::spline::Spline::sample
-pub trait Interpolate<T>: Sized + Copy {
+pub trait Interpolate<T>: Sized + Copy + Linear<T> {
   /// Linear interpolation.
   fn lerp(a: Self, b: Self, t: T) -> Self;
 
@@ -240,10 +240,7 @@ where V: Linear<T>,
   let one_t_3 = one_t_2 * one_t;
   let three = T::one() + T::one() + T::one();
 
-  // mirror the “output” tangent based on the next key “input” tangent
-  let v_ = b + b - v;
-
-  a.outer_mul(one_t_3) + u.outer_mul(three * one_t_2 * t) + v_.outer_mul(three * one_t * t * t) + b.outer_mul(t * t * t)
+  a.outer_mul(one_t_3) + u.outer_mul(three * one_t_2 * t) + v.outer_mul(three * one_t * t * t) + b.outer_mul(t * t * t)
 }
 
 macro_rules! impl_interpolate_simple {

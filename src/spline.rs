@@ -7,7 +7,7 @@
 #[cfg(not(feature = "std"))] use core::ops::{Div, Mul};
 #[cfg(not(feature = "std"))] use core::cmp::Ordering;
 
-use crate::interpolate::{Interpolate, Additive, One, Trigo};
+use crate::interpolate::{Additive, Interpolate, One, Trigo};
 use crate::interpolation::Interpolation;
 use crate::key::Key;
 
@@ -86,7 +86,7 @@ impl<T, V> Spline<T, V> {
   /// the sampling.
   pub fn sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     let keys = &self.0;
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
@@ -134,25 +134,23 @@ impl<T, V> Spline<T, V> {
         }
       }
 
-      Interpolation::Bezier(u) => {
+      Interpolation::Bezier(u) | Interpolation::StrokeBezier(_, u) => {
         // We need to check the next control point to see whether we want quadratic or cubic Bezier.
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
 
         let value =
-          if let Interpolation::Bezier(v) = cp1.interpolation {
-            Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt)
-          } else {
-            Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt)
+          match cp1.interpolation {
+            Interpolation::Bezier(v) => {
+              Interpolate::cubic_bezier(cp0.value, u, cp1.value + cp1.value - v, cp1.value, nt)
+            }
+
+            Interpolation::StrokeBezier(v, _) => {
+              Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt)
+            }
+
+            _ => Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt)
           };
-
-        Some((value, cp0, Some(cp1)))
-      }
-
-      Interpolation::StrokeBezier(input, output) => {
-        let cp1 = &keys[i + 1];
-        let nt = normalize_time(t, cp0, cp1);
-        let value = Interpolate::cubic_bezier(cp0.value, input, output, cp1.value, nt);
 
         Some((value, cp0, Some(cp1)))
       }
@@ -165,7 +163,7 @@ impl<T, V> Spline<T, V> {
   ///
   pub fn sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     self.sample_with_key(t).map(|(v, _, _)| v)
   }
 
@@ -182,7 +180,7 @@ impl<T, V> Spline<T, V> {
   /// This function returns [`None`] if you have no key.
   pub fn clamped_sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     if self.0.is_empty() {
       return None;
     }
@@ -207,7 +205,7 @@ impl<T, V> Spline<T, V> {
   /// Sample a spline at a given time with clamping.
   pub fn clamped_sample(&self, t: T) -> Option<V>
   where T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-        V: Interpolate<T> {
+        V: Additive + Interpolate<T> {
     self.clamped_sample_with_key(t).map(|(v, _, _)| v)
   }
 
