@@ -1,6 +1,6 @@
 # 3.0.0
 
-> Sun Oct 20th 2019
+> Tue Oct 22th 2019
 
 ## Major changes
 
