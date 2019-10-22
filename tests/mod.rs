@@ -1,7 +1,54 @@
-use splines::{Interpolation, Key, Spline};
+use splines::{ Interpolate, Interpolation, Key, Spline};
+use splines::interpolate::{Additive, Linear};
+use std::ops::{Add, Div, Sub, Mul};
 
 #[cfg(feature = "cgmath")] use cgmath as cg;
 #[cfg(feature = "nalgebra")] use nalgebra as na;
+
+// Small utility 2D-point.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct P2<T> {
+  x: T,
+  y: T
+}
+
+impl<T> Add for P2<T> where T: Add<T, Output = T> {
+  type Output = Self;
+
+  fn add(self, rhs: Self) -> Self::Output {
+    P2 {
+      x: self.x + rhs.x,
+      y: self.y + rhs.y
+    }
+  }
+}
+
+impl<T> Sub for P2<T> where T: Sub<T, Output = T> {
+  type Output = Self;
+
+  fn sub(self, rhs: Self) -> Self::Output {
+    P2 {
+      x: self.x - rhs.x,
+      y: self.y - rhs.y
+    }
+  }
+}
+
+impl<T> Linear<T> for P2<T> where Self: Additive, T: Mul<T, Output = T> + Div<T, Output = T> {
+  fn outer_mul(self, t: T) -> Self {
+    P2 {
+      x: self.x * t,
+      y: self.y * t,
+    }
+  }
+
+  fn outer_div(self, t: T) -> Self {
+    P2 {
+      x: self.x / t,
+      y: self.y / t,
+    }
+  }
+}
 
 #[test]
 fn step_interpolation_f32() {
@@ -147,6 +194,22 @@ fn several_interpolations_several_keys() {
   assert_eq!(spline.sample(6.5), Some(1.5));
   assert_eq!(spline.sample(10.), Some(2.));
   assert_eq!(spline.clamped_sample(11.), Some(4.));
+}
+
+#[test]
+fn stroke_bezier_straight() {
+  let keys = vec![
+    Key::new(0.0, [0., 1.], Interpolation::StrokeBezier([0., 1.], [0., 1.])),
+    Key::new(5.0, [5., 1.], Interpolation::StrokeBezier([5., 1.], [5., 1.]))
+  ];
+  let spline = Spline::from_vec(keys);
+
+  assert_eq!(spline.clamped_sample(0.0)[1], 1.);
+  assert_eq!(spline.clamped_sample(1.0)[1], 1.);
+  assert_eq!(spline.clamped_sample(2.0)[1], 1.);
+  assert_eq!(spline.clamped_sample(3.0)[1], 1.);
+  assert_eq!(spline.clamped_sample(4.0)[1], 1.);
+  assert_eq!(spline.clamped_sample(5.0)[1], 1.);
 }
 
 #[cfg(feature = "cgmath")]
