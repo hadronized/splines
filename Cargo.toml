@@ -34,5 +34,15 @@ num-traits = { version = "0.2", optional = true }
 serde =  { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
 
+[dev-dependencies]
+serde_json = "1"
+
 [package.metadata.docs.rs]
 all-features = true
+
+[[example]]
+name = "hello-world"
+
+[[example]]
+name = "serialization"
+required-features = ["serialization"]
