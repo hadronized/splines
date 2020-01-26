@@ -1,3 +1,9 @@
+# 3.1.0
+
+> San Jan 26th 2020
+
+- Add support for `nalgebra-0.19`.
+
 # 3.0.0
 
 > Tue Oct 22th 2019
