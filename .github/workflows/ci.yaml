@@ -13,7 +13,6 @@ jobs:
         run: |
           cargo test --verbose --all-features
 
-
   build-windows:
     runs-on: windows-latest
     steps:
@@ -40,11 +39,16 @@ jobs:
           . ~/.cargo/env
           cargo test --verbose --all-features
 
-  check-readme:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Install cargo-sync-readme
-        run: cargo install --force cargo-sync-readme
-      - name: Check
-        run: cargo sync-readme -c
+      - name: Install dependencies
+        run: |
+          cargo install --force cargo-sync-readme
+          rustup component add rustfmt
+      - name: cargo sync-readme
+        run: |
+          cargo sync-readme -c
+      - name: rustfmt
+        run: cargo fmt -- --check
