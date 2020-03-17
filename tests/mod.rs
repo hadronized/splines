@@ -1,4 +1,3 @@
-use float_cmp::approx_eq;
 use splines::{Interpolation, Key, Spline};
 
 #[cfg(feature = "cgmath")] use cgmath as cg;
@@ -153,6 +152,8 @@ fn several_interpolations_several_keys() {
 #[cfg(feature = "cgmath")]
 #[test]
 fn stroke_bezier_straight() {
+  use float_cmp::approx_eq;
+
   let keys = vec![
     Key::new(0.0, cg::Vector2::new(0., 1.), Interpolation::StrokeBezier(cg::Vector2::new(0., 1.), cg::Vector2::new(0., 1.))),
     Key::new(5.0, cg::Vector2::new(5., 1.), Interpolation::StrokeBezier(cg::Vector2::new(5., 1.), cg::Vector2::new(5., 1.)))
