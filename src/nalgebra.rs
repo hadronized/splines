@@ -10,7 +10,13 @@ use crate::interpolate::{
 macro_rules! impl_interpolate_vector {
   ($($t:tt)*) => {
     // implement Linear
-    impl<T> Linear<T> for $($t)*<T> where T: Scalar + ClosedAdd + ClosedSub + ClosedMul + ClosedDiv {
+    impl<T> Linear<T> for $($t)*<T>
+    where T: Scalar +
+             Copy +
+             ClosedAdd +
+             ClosedSub +
+             ClosedMul +
+             ClosedDiv {
       #[inline(always)]
       fn outer_mul(self, t: T) -> Self {
         self * t
