@@ -106,14 +106,17 @@
 #![cfg_attr(not(feature = "std"), feature(alloc))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 
-#[cfg(not(feature = "std"))] extern crate alloc;
+#[cfg(not(feature = "std"))]
+extern crate alloc;
 
-#[cfg(feature = "impl-cgmath")] mod cgmath;
+#[cfg(feature = "impl-cgmath")]
+mod cgmath;
 pub mod interpolate;
 pub mod interpolation;
 pub mod iter;
 pub mod key;
-#[cfg(feature = "impl-nalgebra")] mod nalgebra;
+#[cfg(feature = "impl-nalgebra")]
+mod nalgebra;
 pub mod spline;
 
 pub use crate::interpolate::Interpolate;
