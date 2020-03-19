@@ -4,7 +4,7 @@ use num_traits as nt;
 use std::ops::Mul;
 
 use crate::interpolate::{
-    cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def, Additive, Interpolate, Linear, One,
+  cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def, Additive, Interpolate, Linear, One,
 };
 
 macro_rules! impl_interpolate_vector {
