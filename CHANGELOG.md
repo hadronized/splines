@@ -1,6 +1,13 @@
+# 3.2
+
+> Thu  Mar 19th 2020
+
+- Add support for `nalgebra-0.20`.
+- Add support for `float-cmp-0.6`.
+
 # 3.1.0
 
-> San Jan 26th 2020
+> Sat Jan 26th 2020
 
 - Add support for `nalgebra-0.19`.
 

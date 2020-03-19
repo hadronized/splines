@@ -1,6 +1,6 @@
 [package]
 name = "splines"
-version = "3.1.0"
+version = "3.2.0"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"
@@ -29,13 +29,13 @@ std = []
 [dependencies]
 alga = { version = "0.9", optional = true }
 cgmath = { version = "0.17", optional = true }
-nalgebra = { version = ">=0.14, <0.20", optional = true }
+nalgebra = { version = "0.20", optional = true }
 num-traits = { version = "0.2", optional = true }
 serde =  { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
 
 [dev-dependencies]
-float-cmp = "0.5"
+float-cmp = "0.6"
 serde_json = "1"
 
 [package.metadata.docs.rs]
