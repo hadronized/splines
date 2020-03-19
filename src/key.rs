@@ -6,7 +6,8 @@
 //! Splines constructed with this crate have the property that it’s possible to change the
 //! interpolation mode on a key-based way, allowing you to implement and encode complex curves.
 
-#[cfg(feature = "serialization")] use serde_derive::{Deserialize, Serialize};
+#[cfg(feature = "serialization")]
+use serde_derive::{Deserialize, Serialize};
 
 use crate::interpolation::Interpolation;
 
@@ -21,17 +22,21 @@ use crate::interpolation::Interpolation;
 #[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
 #[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
 pub struct Key<T, V> {
-  /// Interpolation parameter at which the [`Key`] should be reached.
-  pub t: T,
-  /// Carried value.
-  pub value: V,
-  /// Interpolation mode.
-  pub interpolation: Interpolation<T, V>
+    /// Interpolation parameter at which the [`Key`] should be reached.
+    pub t: T,
+    /// Carried value.
+    pub value: V,
+    /// Interpolation mode.
+    pub interpolation: Interpolation<T, V>,
 }
 
 impl<T, V> Key<T, V> {
-  /// Create a new key.
-  pub fn new(t: T, value: V, interpolation: Interpolation<T, V>) -> Self {
-    Key { t, value, interpolation }
-  }
+    /// Create a new key.
+    pub fn new(t: T, value: V, interpolation: Interpolation<T, V>) -> Self {
+        Key {
+            t,
+            value,
+            interpolation,
+        }
+    }
 }

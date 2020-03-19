@@ -4,13 +4,19 @@ use num_traits as nt;
 use std::ops::Mul;
 
 use crate::interpolate::{
-  Interpolate, Linear, Additive, One, cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def
+    cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def, Additive, Interpolate, Linear, One,
 };
 
 macro_rules! impl_interpolate_vector {
   ($($t:tt)*) => {
     // implement Linear
-    impl<T> Linear<T> for $($t)*<T> where T: Scalar + ClosedAdd + ClosedSub + ClosedMul + ClosedDiv {
+    impl<T> Linear<T> for $($t)*<T>
+    where T: Scalar +
+             Copy +
+             ClosedAdd +
+             ClosedSub +
+             ClosedMul +
+             ClosedDiv {
       #[inline(always)]
       fn outer_mul(self, t: T) -> Self {
         self * t
