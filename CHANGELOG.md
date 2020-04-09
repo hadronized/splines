@@ -1,17 +1,23 @@
+# 3.3
+
+> Thu Apr 0th 2020
+
+- Add support for `nalgebra-0.21`.
+
 # 3.2
 
-> Thu  Mar 19th 2020
+> Thu Mar 19th 2020
 
 - Add support for `nalgebra-0.20`.
 - Add support for `float-cmp-0.6`.
 
-# 3.1.0
+# 3.1
 
 > Sat Jan 26th 2020
 
 - Add support for `nalgebra-0.19`.
 
-# 3.0.0
+# 3.0
 
 > Tue Oct 22th 2019
 
@@ -24,7 +30,7 @@
 
 - Fix Bézier interpolation when the next key is Bézier too.
 
-# 2.2.0
+# 2.2
 
 > Mon Oct 17th 2019
 
@@ -52,7 +58,7 @@
 - Fix the cubic Bézier curve interpolation. The “output” tangent is now taken by mirroring the
   next key’s tangent around its control point.
 
-# 2.0.0
+# 2.0
 
 > Mon Sep 23rd 2019
 
