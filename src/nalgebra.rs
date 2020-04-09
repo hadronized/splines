@@ -1,6 +1,6 @@
-use alga::general::{ClosedAdd, ClosedDiv, ClosedMul, ClosedSub};
 use nalgebra::{Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
 use num_traits as nt;
+use simba::scalar::{ClosedAdd, ClosedDiv, ClosedMul, ClosedSub};
 use std::ops::Mul;
 
 use crate::interpolate::{
