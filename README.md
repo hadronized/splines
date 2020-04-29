@@ -24,7 +24,7 @@ is picked from its lower control point.
 
 # Quickly create splines
 
-```
+```rust
 use splines::{Interpolation, Key, Spline};
 
 let start = Key::new(0., 0., Interpolation::Linear);
@@ -46,7 +46,7 @@ value.
 
 If you try to sample in out-of-bounds sampling parameter, you’ll get no value.
 
-```
+```rust
 assert_eq!(spline.sample(0.), Some(0.));
 assert_eq!(spline.clamped_sample(1.), Some(10.));
 assert_eq!(spline.sample(1.1), None);
@@ -56,7 +56,7 @@ It’s possible that you want to get a value even if you’re out-of-bounds. Thi
 important for simulations / animations. Feel free to use the `Spline::clamped_interpolation` for
 that purpose.
 
-```
+```rust
 assert_eq!(spline.clamped_sample(-0.9), Some(0.)); // clamped to the first key
 assert_eq!(spline.clamped_sample(1.1), Some(10.)); // clamped to the last key
 ```
