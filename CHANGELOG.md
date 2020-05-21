@@ -1,6 +1,13 @@
+# 3.4
+
+> Thu May 21st 2020
+
+- Add support for `float-cmp-0.7` and `float-cmp-0.8`. Because this uses a SemVer range, if you
+  already have a `Cargo.lock`, don’t forget to update `splines` with `cargo update --aggressive`.
+
 # 3.3
 
-> Thu Apr 0th 2020
+> Thu Apr 10th 2020
 
 - Add support for `nalgebra-0.21`.
 
