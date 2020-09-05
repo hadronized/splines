@@ -35,6 +35,7 @@
 > Sep 05th, 2020
 
 - Support of `simba-0.2`.
+- Support of `nalgebra-0.22`.
 
 # 3.4
 
