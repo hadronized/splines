@@ -1,3 +1,41 @@
+# Changelog
+
+<!-- vim-markdown-toc GFM -->
+
+* [3.4.1](#341)
+* [3.4](#34)
+* [3.3](#33)
+* [3.2](#32)
+* [3.1](#31)
+* [3.0](#30)
+  * [Major changes](#major-changes)
+  * [Patch changes](#patch-changes)
+* [2.2](#22)
+* [2.1.1](#211)
+* [2.1](#21)
+* [2.0.1](#201)
+* [2.0](#20)
+  * [Major changes](#major-changes-1)
+  * [Minor changes](#minor-changes)
+* [1.0](#10)
+  * [Major changes](#major-changes-2)
+  * [Minor changes](#minor-changes-1)
+  * [Patch changes](#patch-changes-1)
+* [0.2.3](#023)
+* [0.2.2](#022)
+* [0.2.1](#021)
+* [0.2](#02)
+* [0.1.1](#011)
+* [0.1](#01)
+
+<!-- vim-markdown-toc -->
+
+# 3.4.1
+
+> Sep 05th, 2020
+
+- Support of `simba-0.2`.
+
 # 3.4
 
 > Thu May 21st 2020
