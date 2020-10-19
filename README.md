@@ -90,6 +90,9 @@ So here’s a list of currently supported features and how to enable them:
   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
     - Adds some useful implementations of `Interpolate` for some cgmath types.
     - Enable with the `"impl-cgmath"` feature.
+  - **[glam](https://crates.io/crates/glam) implementors.**
+    - Adds some useful implementations of `Interpolate` for some glam types.
+    - Enable with the `"impl-glam"` feature.
   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
     - Adds some useful implementations of `Interpolate` for some nalgebra types.
     - Enable with the `"impl-nalgebra"` feature.
