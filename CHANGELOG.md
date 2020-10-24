@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [3.4.2](#342)
 * [3.4.1](#341)
 * [3.4](#34)
 * [3.3](#33)
@@ -30,9 +31,15 @@
 
 <!-- vim-markdown-toc -->
 
+# 3.4.2
+
+> Oct 24th, 2020
+
+- Support of `simba-0.3`.
+
 # 3.4.1
 
-> Sep 05th, 2020
+> Sep 5th, 2020
 
 - Support of `simba-0.2`.
 - Support of `nalgebra-0.22`.
