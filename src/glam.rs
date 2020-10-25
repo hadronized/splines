@@ -68,7 +68,7 @@ impl Linear<f32> for Quat {
 impl Interpolate<f32> for Quat {
   #[inline(always)]
   fn lerp(a: Self, b: Self, t: f32) -> Self {
-    a.lerp(b, t).normalize()
+    a.lerp(b, t)
   }
 
   #[inline(always)]
