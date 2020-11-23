@@ -91,6 +91,9 @@
 //!   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
 //!     - Adds some useful implementations of `Interpolate` for some cgmath types.
 //!     - Enable with the `"impl-cgmath"` feature.
+//!   - **[glam](https://crates.io/crates/glam) implementors.**
+//!     - Adds some useful implementations of `Interpolate` for some glam types.
+//!     - Enable with the `"impl-glam"` feature.
 //!   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
 //!     - Adds some useful implementations of `Interpolate` for some nalgebra types.
 //!     - Enable with the `"impl-nalgebra"` feature.
@@ -111,6 +114,8 @@ extern crate alloc;
 
 #[cfg(feature = "impl-cgmath")]
 mod cgmath;
+#[cfg(feature = "impl-glam")]
+mod glam;
 pub mod interpolate;
 pub mod interpolation;
 pub mod iter;
