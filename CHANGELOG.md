@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [3.5](#35)
 * [3.4.2](#342)
 * [3.4.1](#341)
 * [3.4](#34)
@@ -30,6 +31,13 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 3.5
+
+> Nov 23rd, 2020
+
+- Add support for [glam](https://crates.io/crates/glam) via the `"impl-glam"` feature gate.
+- Support of `nalgebra-0.23`.
 
 # 3.4.2
 
