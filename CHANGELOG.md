@@ -33,6 +33,12 @@
 
 <!-- vim-markdown-toc -->
 
+# 3.5.2
+
+> Fri Jan 01, 2021
+
+- Support of `nalgebra-0.24`.
+
 # 3.5.1
 
 > Dec 5th, 2020
