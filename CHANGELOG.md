@@ -2,6 +2,8 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [3.5.3](#353)
+* [3.5.2](#352)
 * [3.5.1](#351)
 * [3.5](#35)
 * [3.4.2](#342)
@@ -32,6 +34,12 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 3.5.3
+
+> Jan 16, 2021
+
+- Resynchronize and fix links in the README (fix in `cargo sync-readme`).
 
 # 3.5.2
 
