@@ -66,7 +66,7 @@ assert_eq!(spline.clamped_sample(1.1), Some(10.)); // clamped to the last key
 [`Spline`] curves are parametered both by the carried value (being interpolated) but also the
 sampling type. It’s very typical to use `f32` or `f64` but really, you can in theory use any
 kind of type; that type must, however, implement a contract defined by a set of traits to
-implement. See [the documentation of this module](crate::interpolate) for further details.
+implement. See [the documentation of this module](https://docs.rs/splines/latest/splines/interpolate/) for further details.
 
 # Features and customization
 
