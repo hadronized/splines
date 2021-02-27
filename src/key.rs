@@ -1,6 +1,6 @@
 //! Spline control points.
 //!
-//! A control point associates to a “sampling value” (a.k.a. time) a carriede value that can be
+//! A control point associates to a “sampling value” (a.k.a. time) a carried value that can be
 //! interpolated along the curve made by the control points.
 //!
 //! Splines constructed with this crate have the property that it’s possible to change the
