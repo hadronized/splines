@@ -1,4 +1,4 @@
-use splines::{Interpolation, Key, Spline};
+use splines::{spline::SampledWithKey, Interpolation, Key, Spline};
 
 #[cfg(feature = "cgmath")]
 use cgmath as cg;
@@ -18,8 +18,14 @@ fn step_interpolation_f32() {
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
   assert_eq!(spline.clamped_sample(1.), Some(10.));
-  assert_eq!(spline.sample_with_key(0.2), Some((10., &start, Some(&end))));
-  assert_eq!(spline.clamped_sample_with_key(1.), Some((10., &end, None)));
+  assert_eq!(
+    spline.sample_with_key(0.2),
+    Some(SampledWithKey { value: 10., key: 0 })
+  );
+  assert_eq!(
+    spline.clamped_sample_with_key(1.),
+    Some(SampledWithKey { value: 10., key: 1 })
+  );
 }
 
 #[test]
@@ -35,8 +41,14 @@ fn step_interpolation_f64() {
   assert_eq!(spline.sample(0.9), Some(10.));
   assert_eq!(spline.sample(1.), None);
   assert_eq!(spline.clamped_sample(1.), Some(10.));
-  assert_eq!(spline.sample_with_key(0.2), Some((10., &start, Some(&end))));
-  assert_eq!(spline.clamped_sample_with_key(1.), Some((10., &end, None)));
+  assert_eq!(
+    spline.sample_with_key(0.2),
+    Some(SampledWithKey { value: 10., key: 0 })
+  );
+  assert_eq!(
+    spline.clamped_sample_with_key(1.),
+    Some(SampledWithKey { value: 10., key: 1 })
+  );
 }
 
 #[test]

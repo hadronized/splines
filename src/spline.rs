@@ -102,7 +102,7 @@ impl<T, V> Spline<T, V> {
   /// sampling impossible. For instance, [`Interpolation::CatmullRom`] requires *four* keys. If
   /// you’re near the beginning of the spline or its end, ensure you have enough keys around to make
   /// the sampling.
-  pub fn sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
+  pub fn sample_with_key(&self, t: T) -> Option<SampledWithKey<V>>
   where
     T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
     V: Additive + Interpolate<T>,
@@ -111,13 +111,13 @@ impl<T, V> Spline<T, V> {
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
 
-    match cp0.interpolation {
+    let value = match cp0.interpolation {
       Interpolation::Step(threshold) => {
         let cp1 = &keys[i + 1];
         let nt = normalize_time(t, cp0, cp1);
         let value = if nt < threshold { cp0.value } else { cp1.value };
 
-        Some((value, cp0, Some(cp1)))
+        Some(value)
       }
 
       Interpolation::Linear => {
@@ -125,7 +125,7 @@ impl<T, V> Spline<T, V> {
         let nt = normalize_time(t, cp0, cp1);
         let value = Interpolate::lerp(cp0.value, cp1.value, nt);
 
-        Some((value, cp0, Some(cp1)))
+        Some(value)
       }
 
       Interpolation::Cosine => {
@@ -135,7 +135,7 @@ impl<T, V> Spline<T, V> {
         let cos_nt = (T::one() - (nt * T::pi()).cos()) / two_t;
         let value = Interpolate::lerp(cp0.value, cp1.value, cos_nt);
 
-        Some((value, cp0, Some(cp1)))
+        Some(value)
       }
 
       Interpolation::CatmullRom => {
@@ -156,7 +156,7 @@ impl<T, V> Spline<T, V> {
             nt,
           );
 
-          Some((value, cp0, Some(cp1)))
+          Some(value)
         }
       }
 
@@ -177,9 +177,11 @@ impl<T, V> Spline<T, V> {
           _ => Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt),
         };
 
-        Some((value, cp0, Some(cp1)))
+        Some(value)
       }
-    }
+    };
+
+    value.map(|value| SampledWithKey { value, key: i })
   }
 
   /// Sample a spline at a given time.
@@ -189,7 +191,7 @@ impl<T, V> Spline<T, V> {
     T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
     V: Additive + Interpolate<T>,
   {
-    self.sample_with_key(t).map(|(v, _, _)| v)
+    self.sample_with_key(t).map(|sampled| sampled.value)
   }
 
   /// Sample a spline at a given time with clamping, returning the interpolated value along with its
@@ -203,7 +205,7 @@ impl<T, V> Spline<T, V> {
   /// # Error
   ///
   /// This function returns [`None`] if you have no key.
-  pub fn clamped_sample_with_key(&self, t: T) -> Option<(V, &Key<T, V>, Option<&Key<T, V>>)>
+  pub fn clamped_sample_with_key(&self, t: T) -> Option<SampledWithKey<V>>
   where
     T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
     V: Additive + Interpolate<T>,
@@ -214,18 +216,22 @@ impl<T, V> Spline<T, V> {
 
     self.sample_with_key(t).or_else(move || {
       let first = self.0.first().unwrap();
+
       if t <= first.t {
-        let second = if self.0.len() >= 2 {
-          Some(&self.0[1])
-        } else {
-          None
+        let sampled = SampledWithKey {
+          value: first.value,
+          key: 0,
         };
-        Some((first.value, &first, second))
+        Some(sampled)
       } else {
         let last = self.0.last().unwrap();
 
         if t >= last.t {
-          Some((last.value, &last, None))
+          let sampled = SampledWithKey {
+            value: last.value,
+            key: self.0.len() - 1,
+          };
+          Some(sampled)
         } else {
           None
         }
@@ -239,7 +245,7 @@ impl<T, V> Spline<T, V> {
     T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
     V: Additive + Interpolate<T>,
   {
-    self.clamped_sample_with_key(t).map(|(v, _, _)| v)
+    self.clamped_sample_with_key(t).map(|sampled| sampled.value)
   }
 
   /// Add a key into the spline.
@@ -293,11 +299,22 @@ impl<T, V> Spline<T, V> {
   }
 }
 
+/// A sampled value along with its key index.
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+pub struct SampledWithKey<V> {
+  /// Sampled value.
+  pub value: V,
+
+  /// Key index.
+  pub key: usize,
+}
+
 /// A mutable [`Key`].
 ///
 /// Mutable keys allow to edit the carried values and the interpolation mode but not the actual
 /// interpolator value as it would invalidate the internal structure of the [`Spline`]. If you
 /// want to achieve this, you’re advised to use [`Spline::replace`].
+#[derive(Debug)]
 pub struct KeyMut<'a, T, V> {
   /// Carried value.
   pub value: &'a mut V,
