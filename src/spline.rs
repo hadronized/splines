@@ -179,8 +179,6 @@ impl<T, V> Spline<T, V> {
 
         Some((value, cp0, Some(cp1)))
       }
-
-      Interpolation::__NonExhaustive => unreachable!(),
     }
   }
 

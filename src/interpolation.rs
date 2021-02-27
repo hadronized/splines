@@ -6,9 +6,13 @@ use serde_derive::{Deserialize, Serialize};
 /// Available kind of interpolations.
 ///
 /// Feel free to visit each variant for more documentation.
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
-#[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
+#[cfg_attr(
+  feature = "serialization",
+  derive(Deserialize, Serialize),
+  serde(rename_all = "snake_case")
+)]
 pub enum Interpolation<T, V> {
   /// Hold a [`Key`] until the sampling value passes the normalized step threshold, in which
   /// case the next key is used.
@@ -20,12 +24,16 @@ pub enum Interpolation<T, V> {
   ///
   /// [`Key`]: crate::key::Key
   Step(T),
+
   /// Linear interpolation between a key and the next one.
   Linear,
+
   /// Cosine interpolation between a key and the next one.
   Cosine,
+
   /// Catmull-Rom interpolation, performing a cubic Hermite interpolation using four keys.
   CatmullRom,
+
   /// Bézier interpolation.
   ///
   /// A control point that uses such an interpolation is associated with an extra point. The segmant
@@ -41,6 +49,7 @@ pub enum Interpolation<T, V> {
   ///   point and the current control point’s associated point. This is called _quadratic Bézer
   ///   interpolation_ and it kicks ass too, but a bit less than cubic.
   Bezier(V),
+
   /// A special Bézier interpolation using an _input tangent_ and an _output tangent_.
   ///
   /// With this kind of interpolation, a control point has an input tangent, which has the same role
@@ -53,8 +62,6 @@ pub enum Interpolation<T, V> {
   ///
   /// Stroke Bézier interpolation is always a cubic Bézier interpolation by default.
   StrokeBezier(V, V),
-  #[doc(hidden)]
-  __NonExhaustive,
 }
 
 impl<T, V> Default for Interpolation<T, V> {
