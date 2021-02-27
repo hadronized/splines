@@ -6,10 +6,9 @@
 //! Splines constructed with this crate have the property that it’s possible to change the
 //! interpolation mode on a key-based way, allowing you to implement and encode complex curves.
 
+use crate::interpolation::Interpolation;
 #[cfg(feature = "serialization")]
 use serde_derive::{Deserialize, Serialize};
-
-use crate::interpolation::Interpolation;
 
 /// A spline control point.
 ///
