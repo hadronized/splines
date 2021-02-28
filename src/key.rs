@@ -18,8 +18,11 @@ use serde_derive::{Deserialize, Serialize};
 ///
 /// [`Interpolation`]: crate::interpolation::Interpolation
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
-#[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
+#[cfg_attr(
+  feature = "serialization",
+  derive(Deserialize, Serialize),
+  serde(rename_all = "snake_case")
+)]
 pub struct Key<T, V> {
   /// Interpolation parameter at which the [`Key`] should be reached.
   pub t: T,
