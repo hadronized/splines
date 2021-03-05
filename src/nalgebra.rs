@@ -1,70 +1,18 @@
-use nalgebra::{Scalar, Vector, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
-use num_traits as nt;
-use simba::scalar::{ClosedAdd, ClosedDiv, ClosedMul, ClosedSub};
-use std::ops::Mul;
+use crate::impl_Interpolate;
+use nalgebra::{Quaternion, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
 
-use crate::interpolate::{
-  cubic_bezier_def, cubic_hermite_def, quadratic_bezier_def, Additive, Interpolate, Linear, One,
-};
+impl_Interpolate!(f32, Vector1<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Vector2<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Vector3<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Vector4<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Vector5<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Vector6<f32>, std::f32::consts::PI);
+impl_Interpolate!(f32, Quaternion<f32>, std::f32::consts::PI);
 
-macro_rules! impl_interpolate_vector {
-  ($($t:tt)*) => {
-    // implement Linear
-    impl<T> Linear<T> for $($t)*<T>
-    where T: Scalar +
-             Copy +
-             ClosedAdd +
-             ClosedSub +
-             ClosedMul +
-             ClosedDiv {
-      #[inline(always)]
-      fn outer_mul(self, t: T) -> Self {
-        self * t
-      }
-
-      #[inline(always)]
-      fn outer_div(self, t: T) -> Self {
-        self / t
-      }
-    }
-
-    impl<T, V> Interpolate<T> for $($t)*<V>
-    where Self: Linear<T>,
-          T: Additive + One + Mul<T, Output = T>,
-          V: nt::One +
-             nt::Zero +
-             Additive +
-             Scalar +
-             ClosedAdd +
-             ClosedMul +
-             ClosedSub +
-             Interpolate<T> {
-      #[inline(always)]
-      fn lerp(a: Self, b: Self, t: T) -> Self {
-        Vector::zip_map(&a, &b, |c1, c2| Interpolate::lerp(c1, c2, t))
-      }
-
-      #[inline(always)]
-      fn cubic_hermite(x: (Self, T), a: (Self, T), b: (Self, T), y: (Self, T), t: T) -> Self {
-        cubic_hermite_def(x, a, b, y, t)
-      }
-
-      #[inline(always)]
-      fn quadratic_bezier(a: Self, u: Self, b: Self, t: T) -> Self {
-        quadratic_bezier_def(a, u, b, t)
-      }
-
-      #[inline(always)]
-      fn cubic_bezier(a: Self, u: Self, v: Self, b: Self, t: T) -> Self {
-        cubic_bezier_def(a, u, v, b, t)
-      }
-    }
-  }
-}
-
-impl_interpolate_vector!(Vector1);
-impl_interpolate_vector!(Vector2);
-impl_interpolate_vector!(Vector3);
-impl_interpolate_vector!(Vector4);
-impl_interpolate_vector!(Vector5);
-impl_interpolate_vector!(Vector6);
+impl_Interpolate!(f64, Vector1<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Vector2<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Vector3<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Vector4<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Vector5<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Vector6<f64>, std::f64::consts::PI);
+impl_Interpolate!(f64, Quaternion<f64>, std::f64::consts::PI);

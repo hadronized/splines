@@ -1,15 +1,14 @@
 //! Spline control points.
 //!
-//! A control point associates to a “sampling value” (a.k.a. time) a carriede value that can be
+//! A control point associates to a “sampling value” (a.k.a. time) a carried value that can be
 //! interpolated along the curve made by the control points.
 //!
 //! Splines constructed with this crate have the property that it’s possible to change the
 //! interpolation mode on a key-based way, allowing you to implement and encode complex curves.
 
+use crate::interpolation::Interpolation;
 #[cfg(feature = "serialization")]
 use serde_derive::{Deserialize, Serialize};
-
-use crate::interpolation::Interpolation;
 
 /// A spline control point.
 ///
@@ -19,8 +18,11 @@ use crate::interpolation::Interpolation;
 ///
 /// [`Interpolation`]: crate::interpolation::Interpolation
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
-#[cfg_attr(feature = "serialization", serde(rename_all = "snake_case"))]
+#[cfg_attr(
+  feature = "serialization",
+  derive(Deserialize, Serialize),
+  serde(rename_all = "snake_case")
+)]
 pub struct Key<T, V> {
   /// Interpolation parameter at which the [`Key`] should be reached.
   pub t: T,
