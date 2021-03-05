@@ -10,7 +10,7 @@ fn nalgebra_vector_interpolation() {
   let mid = na::Vector2::new(0.5, 0.5);
   let end = na::Vector2::new(1.0, 1.0);
 
-  assert_eq!(Interpolate::lerp(start, end, 0.0), start);
-  assert_eq!(Interpolate::lerp(start, end, 1.0), end);
-  assert_eq!(Interpolate::lerp(start, end, 0.5), mid);
+  assert_eq!(Interpolate::lerp(0., start, end), start);
+  assert_eq!(Interpolate::lerp(1., start, end), end);
+  assert_eq!(Interpolate::lerp(0.5, start, end), mid);
 }
