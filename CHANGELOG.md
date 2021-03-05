@@ -2,6 +2,9 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [4.0](#40)
+  * [Major changes](#major-changes)
+  * [Patch changes](#patch-changes)
 * [3.5.4](#354)
 * [3.5.3](#353)
 * [3.5.2](#352)
@@ -14,19 +17,19 @@
 * [3.2](#32)
 * [3.1](#31)
 * [3.0](#30)
-  * [Major changes](#major-changes)
-  * [Patch changes](#patch-changes)
+  * [Major changes](#major-changes-1)
+  * [Patch changes](#patch-changes-1)
 * [2.2](#22)
 * [2.1.1](#211)
 * [2.1](#21)
 * [2.0.1](#201)
 * [2.0](#20)
-  * [Major changes](#major-changes-1)
+  * [Major changes](#major-changes-2)
   * [Minor changes](#minor-changes)
 * [1.0](#10)
-  * [Major changes](#major-changes-2)
+  * [Major changes](#major-changes-3)
   * [Minor changes](#minor-changes-1)
-  * [Patch changes](#patch-changes-1)
+  * [Patch changes](#patch-changes-2)
 * [0.2.3](#023)
 * [0.2.2](#022)
 * [0.2.1](#021)
@@ -35,6 +38,26 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 4.0
+
+> Mar 05, 2021
+
+## Major changes
+
+- Switch the `Interpolation` enum to `#[non_exhaustive]` to allow adding more interpolation modes (if any) in the
+  future.
+- Introduce `SampledWithKey`, which is a more elegant / typed way to access a sample along with its associated key
+  index.
+- Refactor the `Interpolate` trait and add the `Interpolator` trait.
+
+## Patch changes
+
+- Highly simplify the various implementors (`cgmath`, `nalgebra` and `glam`) so that maintenance is easy.
+- Expose the `impl_Interpolate` macro, allowing to implement the API all at once if a type implements the various
+  `std::ops:*` traits. Since most of the crates do, this macro makes it really easy to add support for a crate.
+- Drop `simba` as a direct dependency.
+- Drop `num-traits` as a direct dependency.
 
 # 3.5.4
 
