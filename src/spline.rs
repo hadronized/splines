@@ -1,5 +1,9 @@
 //! Spline curves and operations.
 
+#[cfg(feature = "std")]
+use crate::interpolate::{Interpolate, Interpolator};
+use crate::interpolation::Interpolation;
+use crate::key::Key;
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
 #[cfg(not(feature = "std"))]
@@ -10,12 +14,6 @@ use core::ops::{Div, Mul};
 use serde_derive::{Deserialize, Serialize};
 #[cfg(feature = "std")]
 use std::cmp::Ordering;
-#[cfg(feature = "std")]
-use std::ops::{Div, Mul};
-
-use crate::interpolate::{Additive, Interpolate, One, Trigo};
-use crate::interpolation::Interpolation;
-use crate::key::Key;
 
 /// Spline curve used to provide interpolation between control points (keys).
 ///
@@ -104,8 +102,8 @@ impl<T, V> Spline<T, V> {
   /// the sampling.
   pub fn sample_with_key(&self, t: T) -> Option<SampledWithKey<V>>
   where
-    T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-    V: Additive + Interpolate<T>,
+    T: Interpolator,
+    V: Interpolate<T>,
   {
     let keys = &self.0;
     let i = search_lower_cp(keys, t)?;
@@ -114,26 +112,24 @@ impl<T, V> Spline<T, V> {
     let value = match cp0.interpolation {
       Interpolation::Step(threshold) => {
         let cp1 = &keys[i + 1];
-        let nt = normalize_time(t, cp0, cp1);
-        let value = if nt < threshold { cp0.value } else { cp1.value };
+        let nt = t.normalize(cp0.t, cp1.t);
+        let value = V::step(nt, threshold, cp0.value, cp1.value);
 
         Some(value)
       }
 
       Interpolation::Linear => {
         let cp1 = &keys[i + 1];
-        let nt = normalize_time(t, cp0, cp1);
-        let value = Interpolate::lerp(cp0.value, cp1.value, nt);
+        let nt = t.normalize(cp0.t, cp1.t);
+        let value = V::lerp(nt, cp0.value, cp1.value);
 
         Some(value)
       }
 
       Interpolation::Cosine => {
-        let two_t = T::one() + T::one();
         let cp1 = &keys[i + 1];
-        let nt = normalize_time(t, cp0, cp1);
-        let cos_nt = (T::one() - (nt * T::pi()).cos()) / two_t;
-        let value = Interpolate::lerp(cp0.value, cp1.value, cos_nt);
+        let nt = t.normalize(cp0.t, cp1.t);
+        let value = V::cosine(nt, cp0.value, cp1.value);
 
         Some(value)
       }
@@ -147,13 +143,13 @@ impl<T, V> Spline<T, V> {
           let cp1 = &keys[i + 1];
           let cpm0 = &keys[i - 1];
           let cpm1 = &keys[i + 2];
-          let nt = normalize_time(t, cp0, cp1);
-          let value = Interpolate::cubic_hermite(
-            (cpm0.value, cpm0.t),
-            (cp0.value, cp0.t),
-            (cp1.value, cp1.t),
-            (cpm1.value, cpm1.t),
+          let nt = t.normalize(cp0.t, cp1.t);
+          let value = V::cubic_hermite(
             nt,
+            (cpm0.t, cpm0.value),
+            (cp0.t, cp0.value),
+            (cp1.t, cp1.value),
+            (cpm1.t, cpm1.value),
           );
 
           Some(value)
@@ -163,18 +159,14 @@ impl<T, V> Spline<T, V> {
       Interpolation::Bezier(u) | Interpolation::StrokeBezier(_, u) => {
         // We need to check the next control point to see whether we want quadratic or cubic Bezier.
         let cp1 = &keys[i + 1];
-        let nt = normalize_time(t, cp0, cp1);
+        let nt = t.normalize(cp0.t, cp1.t);
 
         let value = match cp1.interpolation {
-          Interpolation::Bezier(v) => {
-            Interpolate::cubic_bezier(cp0.value, u, cp1.value + cp1.value - v, cp1.value, nt)
-          }
+          Interpolation::Bezier(v) => V::cubic_bezier_mirrored(nt, cp0.value, u, v, cp1.value),
 
-          Interpolation::StrokeBezier(v, _) => {
-            Interpolate::cubic_bezier(cp0.value, u, v, cp1.value, nt)
-          }
+          Interpolation::StrokeBezier(v, _) => V::cubic_bezier(nt, cp0.value, u, v, cp1.value),
 
-          _ => Interpolate::quadratic_bezier(cp0.value, u, cp1.value, nt),
+          _ => V::quadratic_bezier(nt, cp0.value, u, cp1.value),
         };
 
         Some(value)
@@ -188,8 +180,8 @@ impl<T, V> Spline<T, V> {
   ///
   pub fn sample(&self, t: T) -> Option<V>
   where
-    T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-    V: Additive + Interpolate<T>,
+    T: Interpolator,
+    V: Interpolate<T>,
   {
     self.sample_with_key(t).map(|sampled| sampled.value)
   }
@@ -207,8 +199,8 @@ impl<T, V> Spline<T, V> {
   /// This function returns [`None`] if you have no key.
   pub fn clamped_sample_with_key(&self, t: T) -> Option<SampledWithKey<V>>
   where
-    T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-    V: Additive + Interpolate<T>,
+    T: Interpolator,
+    V: Interpolate<T>,
   {
     if self.0.is_empty() {
       return None;
@@ -242,8 +234,8 @@ impl<T, V> Spline<T, V> {
   /// Sample a spline at a given time with clamping.
   pub fn clamped_sample(&self, t: T) -> Option<V>
   where
-    T: Additive + One + Trigo + Mul<T, Output = T> + Div<T, Output = T> + PartialOrd,
-    V: Additive + Interpolate<T>,
+    T: Interpolator,
+    V: Interpolate<T>,
   {
     self.clamped_sample_with_key(t).map(|sampled| sampled.value)
   }
@@ -320,16 +312,6 @@ pub struct KeyMut<'a, T, V> {
   pub value: &'a mut V,
   /// Interpolation mode to use for that key.
   pub interpolation: &'a mut Interpolation<T, V>,
-}
-
-// Normalize a time ([0;1]) given two control points.
-#[inline(always)]
-pub(crate) fn normalize_time<T, V>(t: T, cp: &Key<T, V>, cp1: &Key<T, V>) -> T
-where
-  T: Additive + Div<T, Output = T> + PartialEq,
-{
-  assert!(cp1.t != cp.t, "overlapping keys");
-  (t - cp.t) / (cp1.t - cp.t)
 }
 
 // Find the lower control point corresponding to a given time.
