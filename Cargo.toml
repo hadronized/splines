@@ -29,7 +29,7 @@ std = []
 
 [dependencies]
 cgmath = { version = ">=0.17, <0.19", optional = true }
-glam = { version = ">=0.10, <0.13", optional = true }
+glam = { version = ">=0.10, <0.15", optional = true }
 nalgebra = { version = ">=0.21, <0.25", optional = true }
 serde =  { version = "1", optional = true }
 serde_derive = { version = "1", optional = true }
