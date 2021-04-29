@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/."
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  target-branch: master
+  reviewers:
+  - phaazon
+  assignees:
+  - phaazon
+  labels:
+  - dependency-update
+  ignore:
+  - dependency-name: glam
+    versions:
+    - 0.13.0
+  - dependency-name: nalgebra
+    versions:
+    - 0.25.0
+  - dependency-name: cgmath
+    versions:
+    - 0.18.0
