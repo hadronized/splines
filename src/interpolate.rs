@@ -163,5 +163,73 @@ macro_rules! impl_Interpolate {
   };
 }
 
+#[macro_export]
+macro_rules! impl_InterpolateT {
+  ($t:ty, $v:ty, $pi:expr) => {
+    impl $crate::interpolate::Interpolate<$t> for $v {
+      fn step(t: $t, threshold: $t, a: Self, b: Self) -> Self {
+        if t < threshold {
+          a
+        } else {
+          b
+        }
+      }
+
+      fn cosine(t: $t, a: Self, b: Self) -> Self {
+        let cos_nt = (1. - (t * $pi).cos()) * 0.5;
+        <Self as $crate::interpolate::Interpolate<$t>>::lerp(cos_nt, a, b)
+      }
+
+      fn lerp(t: $t, a: Self, b: Self) -> Self {
+        let t = Self::from(t);
+        a * (1. - t) + b * t
+      }
+
+      fn cubic_hermite(t: $t, x: ($t, Self), a: ($t, Self), b: ($t, Self), y: ($t, Self)) -> Self {
+        // sampler stuff
+        let t = Self::from(t);
+        let two_t = t * 2.;
+        let three_t = t * 3.;
+        let t2 = t * t;
+        let t3 = t2 * t;
+        let two_t3 = t3 * two_t;
+        let three_t2 = t2 * three_t;
+
+        // tangents
+        let m0 = (b.1 - x.1) / (Self::from(b.0 - x.0));
+        let m1 = (y.1 - a.1) / (Self::from(y.0 - a.0));
+
+        a.1 * (two_t3 - three_t2 + 1.)
+          + m0 * (t3 - t2 * two_t + t)
+          + b.1 * (three_t2 - two_t3)
+          + m1 * (t3 - t2)
+      }
+
+      fn quadratic_bezier(t: $t, a: Self, u: Self, b: Self) -> Self {
+        let t = Self::from(t);
+        let one_t = 1. - t;
+        let one_t2 = one_t * one_t;
+
+        u + (a - u) * one_t2 + (b - u) * t * t
+      }
+
+      fn cubic_bezier(t: $t, a: Self, u: Self, v: Self, b: Self) -> Self {
+        let t = Self::from(t);
+        let one_t = 1. - t;
+        let one_t2 = one_t * one_t;
+        let one_t3 = one_t2 * one_t;
+        let t2 = t * t;
+
+        a * one_t3 + (u * one_t2 * t + v * one_t * t2) * 3. + b * t2 * t
+      }
+
+      fn cubic_bezier_mirrored(t: $t, a: Self, u: Self, v: Self, b: Self) -> Self {
+        <Self as $crate::interpolate::Interpolate<$t>>::cubic_bezier(t, a, u, b + b - v, b)
+      }
+    }
+  };
+}
+
 impl_Interpolate!(f32, f32, std::f32::consts::PI);
 impl_Interpolate!(f64, f64, std::f64::consts::PI);
+impl_InterpolateT!(f32, f64, std::f32::consts::PI);
