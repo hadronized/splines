@@ -10,8 +10,8 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 #[cfg(not(feature = "std"))]
 use core::ops::{Div, Mul};
-#[cfg(feature = "serialization")]
-use serde_derive::{Deserialize, Serialize};
+#[cfg(any(feature = "serialization", feature = "serde"))]
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "std")]
 use std::cmp::Ordering;
 
@@ -28,7 +28,10 @@ use std::cmp::Ordering;
 ///   - [`Spline::clamped_sample`]: behaves like [`Spline::sample`] but will return either the first
 ///     or last key if out of bound; it will return `None` if not enough key.
 #[derive(Debug, Clone)]
-#[cfg_attr(feature = "serialization", derive(Deserialize, Serialize))]
+#[cfg_attr(
+  any(feature = "serialization", feature = "serde"),
+  derive(Deserialize, Serialize)
+)]
 pub struct Spline<T, V>(pub(crate) Vec<Key<T, V>>);
 
 impl<T, V> Spline<T, V> {

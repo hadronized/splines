@@ -1,7 +1,7 @@
 //! Available interpolation modes.
 
-#[cfg(feature = "serialization")]
-use serde_derive::{Deserialize, Serialize};
+#[cfg(any(feature = "serialization", feature = "serde"))]
+use serde::{Deserialize, Serialize};
 
 /// Available kind of interpolations.
 ///
@@ -9,7 +9,7 @@ use serde_derive::{Deserialize, Serialize};
 #[non_exhaustive]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(
-  feature = "serialization",
+  any(feature = "serialization", feature = "serde"),
   derive(Deserialize, Serialize),
   serde(rename_all = "snake_case")
 )]
