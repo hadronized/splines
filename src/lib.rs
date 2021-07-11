@@ -84,19 +84,19 @@
 //!
 //! So here’s a list of currently supported features and how to enable them:
 //!
-//!   - **Serialization / deserialization.**
+//!   - **Serde.**
 //!     - This feature implements both the `Serialize` and `Deserialize` traits from `serde` for all
 //!       types exported by this crate.
-//!     - Enable with the `"serialization"` feature.
+//!     - Enable with the `"serde"` feature.
 //!   - **[cgmath](https://crates.io/crates/cgmath) implementors.**
 //!     - Adds some useful implementations of `Interpolate` for some cgmath types.
-//!     - Enable with the `"impl-cgmath"` feature.
+//!     - Enable with the `"cgmath"` feature.
 //!   - **[glam](https://crates.io/crates/glam) implementors.**
 //!     - Adds some useful implementations of `Interpolate` for some glam types.
-//!     - Enable with the `"impl-glam"` feature.
+//!     - Enable with the `"glam"` feature.
 //!   - **[nalgebra](https://crates.io/crates/nalgebra) implementors.**
 //!     - Adds some useful implementations of `Interpolate` for some nalgebra types.
-//!     - Enable with the `"impl-nalgebra"` feature.
+//!     - Enable with the `"nalgebra"` feature.
 //!   - **Standard library / no standard library.**
 //!     - It’s possible to compile against the standard library or go on your own without it.
 //!     - Compiling with the standard library is enabled by default.
@@ -112,15 +112,15 @@
 #[cfg(not(feature = "std"))]
 extern crate alloc;
 
-#[cfg(feature = "impl-cgmath")]
+#[cfg(any(feature = "impl-cgmath", feature = "cgmath"))]
 mod cgmath;
-#[cfg(feature = "impl-glam")]
+#[cfg(any(feature = "impl-glam", feature = "glam"))]
 mod glam;
 pub mod interpolate;
 pub mod interpolation;
 pub mod iter;
 pub mod key;
-#[cfg(feature = "impl-nalgebra")]
+#[cfg(any(feature = "impl-nalgebra", feature = "nalgebra"))]
 mod nalgebra;
 pub mod spline;
 

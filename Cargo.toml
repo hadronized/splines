@@ -24,15 +24,14 @@ default = ["std"]
 impl-cgmath = ["cgmath"]
 impl-glam = ["glam"]
 impl-nalgebra = ["nalgebra"]
-serialization = ["serde", "serde_derive"]
+serialization = ["serde"]
 std = []
 
 [dependencies]
 cgmath = { version = ">=0.17, <0.19", optional = true }
 glam = { version = ">=0.10, <0.15", optional = true }
 nalgebra = { version = ">=0.21, <0.25", optional = true }
-serde =  { version = "1", optional = true }
-serde_derive = { version = "1", optional = true }
+serde =  { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
 float-cmp = ">=0.6, < 0.9"
@@ -46,4 +45,4 @@ name = "hello-world"
 
 [[example]]
 name = "serialization"
-required-features = ["serialization"]
+required-features = ["serde"]

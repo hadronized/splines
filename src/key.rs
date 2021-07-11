@@ -7,8 +7,8 @@
 //! interpolation mode on a key-based way, allowing you to implement and encode complex curves.
 
 use crate::interpolation::Interpolation;
-#[cfg(feature = "serialization")]
-use serde_derive::{Deserialize, Serialize};
+#[cfg(any(feature = "serialization", feature = "serde"))]
+use serde::{Deserialize, Serialize};
 
 /// A spline control point.
 ///
@@ -19,7 +19,7 @@ use serde_derive::{Deserialize, Serialize};
 /// [`Interpolation`]: crate::interpolation::Interpolation
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(
-  feature = "serialization",
+  any(feature = "serialization", feature = "serde"),
   derive(Deserialize, Serialize),
   serde(rename_all = "snake_case")
 )]
