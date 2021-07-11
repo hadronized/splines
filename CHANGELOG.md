@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [4.0.1](#401)
 * [4.0](#40)
   * [Major changes](#major-changes)
   * [Patch changes](#patch-changes)
@@ -38,6 +39,18 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 4.0.1
+
+> Jul 11, 2021
+
+- Add support up to `glam-0.17`.
+- Add support up to `nalgebra-0.27`.
+- Replace the name of some feature gates:
+  - `serialization` becomes `serde`.
+  - `impl-*` becomes `*`.
+  - The previous feature gates are kept around to prevent a breaking change but will eventually be removed in the next
+    major update.
 
 # 4.0
 
