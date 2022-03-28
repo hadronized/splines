@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [4.1](#41)
 * [4.0.3](#403)
 * [4.0.2](#402)
 * [4.0.1](#401)
@@ -41,6 +42,16 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 4.1
+
+> Mar 28, 2022
+
+- Support for edition 2021.
+- Bump `float-cmp` dependency.
+- Bump `glam` dependency.
+- Bump `nalgebra` dependency.
+- Simplify the CI.
 
 # 4.0.3
 
