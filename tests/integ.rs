@@ -132,6 +132,12 @@ fn linear_interpolation_several_keys() {
 }
 
 #[test]
+fn cubic_interpolation() {
+  let start = Key::new(0., 0., Interpolation::CatmullRom);
+  let end = Key::new(1., 10., Interpolation::default());
+}
+
+#[test]
 fn several_interpolations_several_keys() {
   let start = Key::new(0., 0., Interpolation::Step(0.5));
   let k1 = Key::new(1., 5., Interpolation::Linear);
