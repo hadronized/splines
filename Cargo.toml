@@ -41,6 +41,9 @@ serde_json = "1"
 all-features = true
 
 [[example]]
+name = "R-approx-function"
+
+[[example]]
 name = "hello-world"
 
 [[example]]
