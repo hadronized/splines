@@ -318,37 +318,20 @@ pub struct KeyMut<'a, T, V> {
 }
 
 // Find the lower control point corresponding to a given time.
+// It has the property to have a timestamp smaller or equal to t
 fn search_lower_cp<T, V>(cps: &[Key<T, V>], t: T) -> Option<usize>
 where
   T: PartialOrd,
 {
-  let mut i = 0;
   let len = cps.len();
-
   if len < 2 {
     return None;
   }
-
-  loop {
-    let cp = &cps[i];
-    let cp1 = &cps[i + 1];
-
-    if t >= cp1.t {
-      if i >= len - 2 {
-        return None;
-      }
-
-      i += 1;
-    } else if t < cp.t {
-      if i == 0 {
-        return None;
-      }
-
-      i -= 1;
-    } else {
-      break; // found
-    }
+  match cps.binary_search_by(|key| key.t.partial_cmp(&t).unwrap()) {
+    Err(i) if i >= len => None,
+    Err(i) if i == 0 => None,
+    Err(i) => Some(i-1),
+    Ok(i) if i == len - 1 => None,
+    Ok(i) => Some(i),
   }
-
-  Some(i)
 }
