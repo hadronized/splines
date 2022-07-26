@@ -330,7 +330,7 @@ where
   match cps.binary_search_by(|key| key.t.partial_cmp(&t).unwrap()) {
     Err(i) if i >= len => None,
     Err(i) if i == 0 => None,
-    Err(i) => Some(i-1),
+    Err(i) => Some(i - 1),
     Ok(i) if i == len - 1 => None,
     Ok(i) => Some(i),
   }
