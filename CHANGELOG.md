@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [4.1.1](#411)
 * [4.1](#41)
 * [4.0.3](#403)
 * [4.0.2](#402)
@@ -42,6 +43,17 @@
 * [0.1](#01)
 
 <!-- vim-markdown-toc -->
+
+# 4.1.1
+
+> Jul 27, 2022
+
+- Internal enhancement of sampling splines by looking for control points. That brings the lookup from _O(1)_ to
+  _O(log(N))_. That is super embarassing because it should have been the default from the very first commit. Sorry
+  about that.
+- Fix hermite cubic interpolation.
+- Add support for `glam-0.21`.
+- Add support for `nalgebra-0.31`.
 
 # 4.1
 
