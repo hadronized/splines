@@ -127,15 +127,16 @@ macro_rules! impl_Interpolate {
         let three_t = t * 3.;
         let t2 = t * t;
         let t3 = t2 * t;
-        let two_t3 = t3 * two_t;
-        let three_t2 = t2 * three_t;
+        let two_t3 = t2 * two_t;
+        let two_t2 = t * two_t;
+        let three_t2 = t * three_t;
 
         // tangents
-        let m0 = (b.1 - x.1) / (b.0 - x.0);
-        let m1 = (y.1 - a.1) / (y.0 - a.0);
+        let m0 = (b.1 - x.1) / (b.0 - x.0) * (b.0 - a.0);
+        let m1 = (y.1 - a.1) / (y.0 - a.0) * (b.0 - a.0);
 
         a.1 * (two_t3 - three_t2 + 1.)
-          + m0 * (t3 - t2 * two_t + t)
+          + m0 * (t3 - two_t2 + t)
           + b.1 * (three_t2 - two_t3)
           + m1 * (t3 - t2)
       }
@@ -192,15 +193,16 @@ macro_rules! impl_InterpolateT {
         let three_t = t * 3.;
         let t2 = t * t;
         let t3 = t2 * t;
-        let two_t3 = t3 * two_t;
-        let three_t2 = t2 * three_t;
+        let two_t3 = t2 * two_t;
+        let two_t2 = t * two_t;
+        let three_t2 = t * three_t;
 
         // tangents
-        let m0 = (b.1 - x.1) / (Self::from(b.0 - x.0));
-        let m1 = (y.1 - a.1) / (Self::from(y.0 - a.0));
+        let m0 = (b.1 - x.1) / (Self::from(b.0 - x.0)) * (Self::from(b.0 - a.0));
+        let m1 = (y.1 - a.1) / (Self::from(y.0 - a.0)) * (Self::from(b.0 - a.0));
 
         a.1 * (two_t3 - three_t2 + 1.)
-          + m0 * (t3 - t2 * two_t + t)
+          + m0 * (t3 - two_t2 + t)
           + b.1 * (three_t2 - two_t3)
           + m1 * (t3 - t2)
       }
