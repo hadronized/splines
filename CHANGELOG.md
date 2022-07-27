@@ -48,7 +48,7 @@
 
 > Jul 27, 2022
 
-- Internal enhancement of sampling splines by looking for control points. That brings the lookup from _O(1)_ to
+- Internal enhancement of sampling splines by looking for control points. That brings the lookup from _O(N)_ to
   _O(log(N))_. That is super embarassing because it should have been the default from the very first commit. Sorry
   about that.
 - Fix hermite cubic interpolation.
