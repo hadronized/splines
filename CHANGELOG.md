@@ -1,7 +1,6 @@
 # Changelog
 
-<!-- vim-markdown-toc GFM -->
-
+* [4.1.2](#412)
 * [4.1.1](#411)
 * [4.1](#41)
 * [4.0.3](#403)
@@ -42,7 +41,14 @@
 * [0.1.1](#011)
 * [0.1](#01)
 
-<!-- vim-markdown-toc -->
+# 4.2.0
+
+> Feb 1, 2023
+
+- Add support for `glam-0.22`.
+- Add support for `nalgebra-0.32`.
+- Add deprecation lints for `impl-*` feature gates. Those shouldn’t be used anymore and the `*` variant should be 
+  preferred. For instance, if you used `impl-cgmath`, you should just use the `cgmath` feature gate now.
 
 # 4.1.1
 
