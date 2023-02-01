@@ -108,6 +108,17 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(feature = "std"), feature(alloc))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
+#![cfg_attr(
+  any(
+    feature = "impl-cgmath",
+    feature = "impl-glam",
+    feature = "impl-nalgebra"
+  ),
+  deprecated(
+    since = "4.2.0",
+    note = "you are using an impl-* feature gate; please switch to * (e.g. impl-cgmath becomes cgmath)"
+  )
+)]
 
 #[cfg(not(feature = "std"))]
 extern crate alloc;
