@@ -1,6 +1,6 @@
 [package]
 name = "splines"
-version = "4.1.1"
+version = "4.2.0"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"
@@ -13,12 +13,6 @@ readme = "README.md"
 
 edition = "2021"
 
-[badges]
-travis-ci = { repository = "phaazon/splines", branch = "master" }
-is-it-maintained-issue-resolution = { repository = "phaazon/splines" }
-is-it-maintained-open-issues = { repository = "phaazon/splines" }
-maintenance = { status = "actively-developed" }
-
 [features]
 default = ["std"]
 impl-cgmath = ["cgmath"]
@@ -29,8 +23,8 @@ std = []
 
 [dependencies]
 cgmath = { version = ">=0.17, <0.19", optional = true }
-glam = { version = ">=0.10, <0.22", optional = true }
-nalgebra = { version = ">=0.21, <0.32", optional = true }
+glam = { version = ">=0.10, <0.23", optional = true }
+nalgebra = { version = ">=0.21, <0.33", optional = true }
 serde =  { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
@@ -38,7 +32,7 @@ float-cmp = ">=0.6, < 0.10"
 serde_json = "1"
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["std", "cgmath", "glam", "nalgebra", "serde"]
 
 [[example]]
 name = "hello-world"
