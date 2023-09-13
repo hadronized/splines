@@ -55,6 +55,13 @@ impl<T, V> Spline<T, V> {
     spline.internal_sort();
     spline
   }
+  
+  /// Clear the spline by removing all keys. Keeps the underlying allocated storage, so adding
+  /// new keys should be faster than creating a new [`Spline`]
+  #[inline]
+  pub fn clear(&mut self) {
+    self.0.clear()
+  }
 
   /// Create a new spline by consuming an `Iterater<Item = Key<T>>`. They keys don’t have to be
   /// sorted.
