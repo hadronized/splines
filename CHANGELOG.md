@@ -1,6 +1,7 @@
 # Changelog
 
-* [4.1.2](#412)
+* [4.3](#43)
+* [4.2](#42)
 * [4.1.1](#411)
 * [4.1](#41)
 * [4.0.3](#403)
@@ -40,6 +41,13 @@
 * [0.2](#02)
 * [0.1.1](#011)
 * [0.1](#01)
+
+# 4.3.0
+
+> Sep 23, 2023
+
+- Add support for `glam-0.23` and `glam-0.24`. (cdc48a4)
+- Add `Spline::clear` to clear a spline keys without deallocating its internal storage. (eca09f1)
 
 # 4.2.0
 
