@@ -27,7 +27,7 @@ use std::cmp::Ordering;
 ///     for the required interpolation mode, you get `None`.
 ///   - [`Spline::clamped_sample`]: behaves like [`Spline::sample`] but will return either the first
 ///     or last key if out of bound; it will return `None` if not enough key.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 #[cfg_attr(
   any(feature = "serialization", feature = "serde"),
   derive(Deserialize, Serialize)
