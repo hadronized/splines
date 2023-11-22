@@ -1,5 +1,6 @@
 # Changelog
 
+* [4.3.1](#431)
 * [4.3](#43)
 * [4.2](#42)
 * [4.1.1](#411)
@@ -41,6 +42,12 @@
 * [0.2](#02)
 * [0.1.1](#011)
 * [0.1](#01)
+
+# 4.3.1
+
+> Nov 22, 2023
+
+- Add `Default` implementation for `Spline`. [c6ba847](https://github.com/phaazon/splines/commit/c6ba847)
 
 # 4.3
 
