@@ -26,7 +26,7 @@ impl<'a, T, V> Iterator for Iter<'a, T, V> {
   fn next(&mut self) -> Option<Self::Item> {
     let r = self.spline.0.get(self.i);
 
-    if let Some(_) = r {
+    if r.is_some() {
       self.i += 1;
     }
 

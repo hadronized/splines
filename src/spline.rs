@@ -63,7 +63,7 @@ impl<T, V> Spline<T, V> {
   /// new keys should be faster than creating a new [`Spline`]
   #[inline]
   pub fn clear(&mut self) {
-    self.0.clear()
+    self.0.clear();
   }
 
   /// Create a new spline by consuming an `Iterater<Item = Key<T>>`. They keys don’t have to be
@@ -119,7 +119,7 @@ impl<T, V> Spline<T, V> {
     V: Interpolate<T>,
   {
     let keys = self.0.as_slices().0;
-    let i = search_lower_cp(keys, t)?;
+    let i = search_lower_cp(keys, &t)?;
     let cp0 = &keys[i];
 
     let value = match cp0.interpolation {
@@ -220,7 +220,7 @@ impl<T, V> Spline<T, V> {
     }
 
     self.sample_with_key(t).or_else(move || {
-      let first = self.0.get(0).unwrap();
+      let first = self.0.front().unwrap();
 
       if t <= first.t {
         let sampled = SampledWithKey {
@@ -229,7 +229,7 @@ impl<T, V> Spline<T, V> {
         };
         Some(sampled)
       } else {
-        let last = self.0.get(self.len() - 1).unwrap();
+        let last = self.0.back().unwrap();
 
         if t >= last.t {
           let sampled = SampledWithKey {
@@ -329,7 +329,7 @@ pub struct KeyMut<'a, T, V> {
 
 // Find the lower control point corresponding to a given time.
 // It has the property to have a timestamp smaller or equal to t
-fn search_lower_cp<T, V>(cps: &[Key<T, V>], t: T) -> Option<usize>
+fn search_lower_cp<T, V>(cps: &[Key<T, V>], t: &T) -> Option<usize>
 where
   T: PartialOrd,
 {
@@ -337,9 +337,9 @@ where
   if len < 2 {
     return None;
   }
-  match cps.binary_search_by(|key| key.t.partial_cmp(&t).unwrap()) {
+  match cps.binary_search_by(|key| key.t.partial_cmp(t).unwrap()) {
     Err(i) if i >= len => None,
-    Err(i) if i == 0 => None,
+    Err(0) => None,
     Err(i) => Some(i - 1),
     Ok(i) if i == len - 1 => None,
     Ok(i) => Some(i),
