@@ -258,8 +258,17 @@ impl<T, V> Spline<T, V> {
   where
     T: PartialOrd,
   {
+    let is_sort_required = if let Some(old_max) = self.0.back() {
+      old_max.t > key.t
+    } else {
+      false
+    };
+
     self.0.push_back(key);
-    self.internal_sort();
+
+    if is_sort_required {
+      self.internal_sort();
+    }
   }
 
   /// Remove a key from the spline.
