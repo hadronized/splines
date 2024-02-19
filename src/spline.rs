@@ -118,7 +118,7 @@ impl<T, V> Spline<T, V> {
     T: Interpolator,
     V: Interpolate<T>,
   {
-    let keys = self.0.as_slices().0;
+    let keys = self.keys();
     let i = search_lower_cp(keys, &t)?;
     let cp0 = &keys[i];
 
@@ -264,11 +264,7 @@ impl<T, V> Spline<T, V> {
 
   /// Remove a key from the spline.
   pub fn remove(&mut self, index: usize) -> Option<Key<T, V>> {
-    if index >= self.0.len() {
-      None
-    } else {
-      Some(self.0.remove(index).unwrap())
-    }
+    self.0.remove(index)
   }
 
   /// Update a key and return the key already present.
