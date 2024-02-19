@@ -5,7 +5,7 @@ use crate::interpolate::{Interpolate, Interpolator};
 use crate::interpolation::Interpolation;
 use crate::key::Key;
 #[cfg(not(feature = "std"))]
-use alloc::vec::Vec;
+use alloc::collections::VecDeque;
 #[cfg(not(feature = "std"))]
 use core::cmp::Ordering;
 #[cfg(not(feature = "std"))]
@@ -14,6 +14,8 @@ use core::ops::{Div, Mul};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "std")]
 use std::cmp::Ordering;
+#[cfg(feature = "std")]
+use std::collections::VecDeque;
 
 /// Spline curve used to provide interpolation between control points (keys).
 ///
@@ -32,7 +34,7 @@ use std::cmp::Ordering;
   any(feature = "serialization", feature = "serde"),
   derive(Deserialize, Serialize)
 )]
-pub struct Spline<T, V>(pub(crate) Vec<Key<T, V>>);
+pub struct Spline<T, V>(pub(crate) VecDeque<Key<T, V>>);
 
 impl<T, V> Spline<T, V> {
   /// Internal sort to ensure invariant of sorting keys is valid.
@@ -42,6 +44,7 @@ impl<T, V> Spline<T, V> {
   {
     self
       .0
+      .make_contiguous()
       .sort_by(|k0, k1| k0.t.partial_cmp(&k1.t).unwrap_or(Ordering::Less));
   }
 
@@ -51,7 +54,7 @@ impl<T, V> Spline<T, V> {
   where
     T: PartialOrd,
   {
-    let mut spline = Spline(keys);
+    let mut spline = Spline(VecDeque::from(keys));
     spline.internal_sort();
     spline
   }
@@ -80,7 +83,7 @@ impl<T, V> Spline<T, V> {
 
   /// Retrieve the keys of a spline.
   pub fn keys(&self) -> &[Key<T, V>] {
-    &self.0
+    self.0.as_slices().0
   }
 
   /// Number of keys.
@@ -115,7 +118,7 @@ impl<T, V> Spline<T, V> {
     T: Interpolator,
     V: Interpolate<T>,
   {
-    let keys = &self.0;
+    let keys = self.0.as_slices().0;
     let i = search_lower_cp(keys, t)?;
     let cp0 = &keys[i];
 
@@ -217,7 +220,7 @@ impl<T, V> Spline<T, V> {
     }
 
     self.sample_with_key(t).or_else(move || {
-      let first = self.0.first().unwrap();
+      let first = self.0.get(0).unwrap();
 
       if t <= first.t {
         let sampled = SampledWithKey {
@@ -226,7 +229,7 @@ impl<T, V> Spline<T, V> {
         };
         Some(sampled)
       } else {
-        let last = self.0.last().unwrap();
+        let last = self.0.get(self.len() - 1).unwrap();
 
         if t >= last.t {
           let sampled = SampledWithKey {
@@ -255,7 +258,7 @@ impl<T, V> Spline<T, V> {
   where
     T: PartialOrd,
   {
-    self.0.push(key);
+    self.0.push_back(key);
     self.internal_sort();
   }
 
@@ -264,7 +267,7 @@ impl<T, V> Spline<T, V> {
     if index >= self.0.len() {
       None
     } else {
-      Some(self.0.remove(index))
+      Some(self.0.remove(index).unwrap())
     }
   }
 
