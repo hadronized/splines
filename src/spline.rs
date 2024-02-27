@@ -50,11 +50,12 @@ impl<T, V> Spline<T, V> {
 
   /// Create a new spline out of keys. The keys don’t have to be sorted even though it’s recommended
   /// to provide ascending sorted ones (for performance purposes).
-  pub fn from_vec(keys: Vec<Key<T, V>>) -> Self
+  pub fn from_vec<K>(keys: K) -> Self
   where
+    K: Into<VecDeque<Key<T, V>>>,
     T: PartialOrd,
   {
-    let mut spline = Spline(VecDeque::from(keys));
+    let mut spline = Spline(keys.into());
     spline.internal_sort();
     spline
   }
@@ -78,7 +79,7 @@ impl<T, V> Spline<T, V> {
     I: Iterator<Item = Key<T, V>>,
     T: PartialOrd,
   {
-    Self::from_vec(iter.collect())
+    Self::from_vec(iter.collect::<VecDeque<Key<T, V>>>())
   }
 
   /// Retrieve the keys of a spline.
