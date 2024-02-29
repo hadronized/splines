@@ -43,6 +43,12 @@
 * [0.1.1](#011)
 * [0.1](#01)
 
+# 4.3.2
+
+> Feb 29, 2024
+
+- Switch from holding keys in `Vec` into `VecDeque`. [1b4fe44](https://github.com/hadronized/splines/commit/1b4fe44)
+
 # 4.3.1
 
 > Nov 22, 2023
