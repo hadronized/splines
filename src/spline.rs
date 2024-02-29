@@ -5,7 +5,7 @@ use crate::interpolate::{Interpolate, Interpolator};
 use crate::interpolation::Interpolation;
 use crate::key::Key;
 #[cfg(not(feature = "std"))]
-use alloc::vec::Vec;
+use alloc::collections::VecDeque;
 #[cfg(not(feature = "std"))]
 use core::cmp::Ordering;
 #[cfg(not(feature = "std"))]
@@ -14,6 +14,8 @@ use core::ops::{Div, Mul};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "std")]
 use std::cmp::Ordering;
+#[cfg(feature = "std")]
+use std::collections::VecDeque;
 
 /// Spline curve used to provide interpolation between control points (keys).
 ///
@@ -32,7 +34,7 @@ use std::cmp::Ordering;
   any(feature = "serialization", feature = "serde"),
   derive(Deserialize, Serialize)
 )]
-pub struct Spline<T, V>(pub(crate) Vec<Key<T, V>>);
+pub struct Spline<T, V>(pub(crate) VecDeque<Key<T, V>>);
 
 impl<T, V> Spline<T, V> {
   /// Internal sort to ensure invariant of sorting keys is valid.
@@ -42,16 +44,18 @@ impl<T, V> Spline<T, V> {
   {
     self
       .0
+      .make_contiguous()
       .sort_by(|k0, k1| k0.t.partial_cmp(&k1.t).unwrap_or(Ordering::Less));
   }
 
   /// Create a new spline out of keys. The keys don’t have to be sorted even though it’s recommended
   /// to provide ascending sorted ones (for performance purposes).
-  pub fn from_vec(keys: Vec<Key<T, V>>) -> Self
+  pub fn from_vec<K>(keys: K) -> Self
   where
+    K: Into<VecDeque<Key<T, V>>>,
     T: PartialOrd,
   {
-    let mut spline = Spline(keys);
+    let mut spline = Spline(keys.into());
     spline.internal_sort();
     spline
   }
@@ -60,7 +64,7 @@ impl<T, V> Spline<T, V> {
   /// new keys should be faster than creating a new [`Spline`]
   #[inline]
   pub fn clear(&mut self) {
-    self.0.clear()
+    self.0.clear();
   }
 
   /// Create a new spline by consuming an `Iterater<Item = Key<T>>`. They keys don’t have to be
@@ -75,12 +79,12 @@ impl<T, V> Spline<T, V> {
     I: Iterator<Item = Key<T, V>>,
     T: PartialOrd,
   {
-    Self::from_vec(iter.collect())
+    Self::from_vec(iter.collect::<VecDeque<Key<T, V>>>())
   }
 
   /// Retrieve the keys of a spline.
   pub fn keys(&self) -> &[Key<T, V>] {
-    &self.0
+    self.0.as_slices().0
   }
 
   /// Number of keys.
@@ -115,8 +119,8 @@ impl<T, V> Spline<T, V> {
     T: Interpolator,
     V: Interpolate<T>,
   {
-    let keys = &self.0;
-    let i = search_lower_cp(keys, t)?;
+    let keys = self.keys();
+    let i = search_lower_cp(keys, &t)?;
     let cp0 = &keys[i];
 
     let value = match cp0.interpolation {
@@ -217,7 +221,7 @@ impl<T, V> Spline<T, V> {
     }
 
     self.sample_with_key(t).or_else(move || {
-      let first = self.0.first().unwrap();
+      let first = self.0.front().unwrap();
 
       if t <= first.t {
         let sampled = SampledWithKey {
@@ -226,7 +230,7 @@ impl<T, V> Spline<T, V> {
         };
         Some(sampled)
       } else {
-        let last = self.0.last().unwrap();
+        let last = self.0.back().unwrap();
 
         if t >= last.t {
           let sampled = SampledWithKey {
@@ -255,17 +259,22 @@ impl<T, V> Spline<T, V> {
   where
     T: PartialOrd,
   {
-    self.0.push(key);
-    self.internal_sort();
+    let is_sort_required = if let Some(old_max) = self.0.back() {
+      old_max.t > key.t
+    } else {
+      false
+    };
+
+    self.0.push_back(key);
+
+    if is_sort_required {
+      self.internal_sort();
+    }
   }
 
   /// Remove a key from the spline.
   pub fn remove(&mut self, index: usize) -> Option<Key<T, V>> {
-    if index >= self.0.len() {
-      None
-    } else {
-      Some(self.0.remove(index))
-    }
+    self.0.remove(index)
   }
 
   /// Update a key and return the key already present.
@@ -326,7 +335,7 @@ pub struct KeyMut<'a, T, V> {
 
 // Find the lower control point corresponding to a given time.
 // It has the property to have a timestamp smaller or equal to t
-fn search_lower_cp<T, V>(cps: &[Key<T, V>], t: T) -> Option<usize>
+fn search_lower_cp<T, V>(cps: &[Key<T, V>], t: &T) -> Option<usize>
 where
   T: PartialOrd,
 {
@@ -334,9 +343,9 @@ where
   if len < 2 {
     return None;
   }
-  match cps.binary_search_by(|key| key.t.partial_cmp(&t).unwrap()) {
+  match cps.binary_search_by(|key| key.t.partial_cmp(t).unwrap()) {
     Err(i) if i >= len => None,
-    Err(i) if i == 0 => None,
+    Err(0) => None,
     Err(i) => Some(i - 1),
     Ok(i) if i == len - 1 => None,
     Ok(i) => Some(i),
