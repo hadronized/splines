@@ -53,14 +53,14 @@
 
 > Nov 22, 2023
 
-- Add `Default` implementation for `Spline`. [c6ba847](https://github.com/phaazon/splines/commit/c6ba847)
+- Add `Default` implementation for `Spline`. [c6ba847](https://github.com/hadronized/splines/commit/c6ba847)
 
 # 4.3
 
 > Sep 23, 2023
 
-- Add support for `glam-0.23` and `glam-0.24`. [cdc48a4](https://github.com/phaazon/splines/commit/cdc48a4)
-- Add `Spline::clear` to clear a spline keys without deallocating its internal storage. [eca09f1](https://github.com/phaazon/splines/commit/eca09f1)
+- Add support for `glam-0.23` and `glam-0.24`. [cdc48a4](https://github.com/hadronized/splines/commit/cdc48a4)
+- Add `Spline::clear` to clear a spline keys without deallocating its internal storage. [eca09f1](https://github.com/hadronized/splines/commit/eca09f1)
 
 # 4.2
 
