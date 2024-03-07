@@ -1,5 +1,6 @@
 # Changelog
 
+* [4.3.2](#432-yanked)
 * [4.3.1](#431)
 * [4.3](#43)
 * [4.2](#42)
@@ -43,11 +44,16 @@
 * [0.1.1](#011)
 * [0.1](#01)
 
-# 4.3.2
+# ~4.3.2~ yanked
 
 > Feb 29, 2024
 
+> **Yank reason**: this version was yanked because of a bug introduced during the `VecDeque` adoption; indeed, mutating
+> the keys with `remove` or `add` can make the underlying slices unsorted again, causing contiguous assumptions wrong.
+> The next patch version should fix this. Sorry for the issue.
+
 - Switch from holding keys in `Vec` into `VecDeque`. [1b4fe44](https://github.com/hadronized/splines/commit/1b4fe44)
+
 
 # 4.3.1
 
