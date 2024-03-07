@@ -84,7 +84,6 @@ impl<T, V> Spline<T, V> {
 
   /// Retrieve the keys of a spline.
   pub fn keys(&self) -> &[Key<T, V>] {
-    println!("Slices len: {} / {}", self.0.as_slices().0.len(), self.0.as_slices().1.len());
     self.0.as_slices().0
   }
 
