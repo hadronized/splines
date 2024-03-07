@@ -275,7 +275,9 @@ impl<T, V> Spline<T, V> {
 
   /// Remove a key from the spline.
   pub fn remove(&mut self, index: usize) -> Option<Key<T, V>> {
-    self.0.remove(index)
+    let removed = self.0.remove(index);
+    self.0.make_contiguous();
+    removed
   }
 
   /// Update a key and return the key already present.
