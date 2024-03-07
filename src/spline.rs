@@ -267,6 +267,7 @@ impl<T, V> Spline<T, V> {
     };
 
     self.0.push_back(key);
+    self.0.make_contiguous();
 
     if is_sort_required {
       self.internal_sort();
