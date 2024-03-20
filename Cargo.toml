@@ -6,8 +6,8 @@ authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Spline interpolation made easy"
 keywords = ["spline", "interpolation"]
 categories = ["science"]
-homepage = "https://github.com/phaazon/splines"
-repository = "https://github.com/phaazon/splines"
+homepage = "https://github.com/hadronized/splines"
+repository = "https://github.com/hadronized/splines"
 documentation = "https://docs.rs/splines"
 readme = "README.md"
 
