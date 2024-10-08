@@ -25,7 +25,7 @@ std = []
 cgmath = { version = ">=0.17, <0.19", optional = true }
 glam = { version = ">=0.10, <0.27", optional = true }
 nalgebra = { version = ">=0.21, <0.33", optional = true }
-serde =  { version = "1", features = ["derive"], optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
 float-cmp = ">=0.6, < 0.10"
