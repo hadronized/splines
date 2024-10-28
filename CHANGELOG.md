@@ -1,48 +1,9 @@
-# Changelog
+# 4.4.0
 
-* [4.3.2](#432-yanked)
-* [4.3.1](#431)
-* [4.3](#43)
-* [4.2](#42)
-* [4.1.1](#411)
-* [4.1](#41)
-* [4.0.3](#403)
-* [4.0.2](#402)
-* [4.0.1](#401)
-* [4.0](#40)
-  * [Major changes](#major-changes)
-  * [Patch changes](#patch-changes)
-* [3.5.4](#354)
-* [3.5.3](#353)
-* [3.5.2](#352)
-* [3.5.1](#351)
-* [3.5](#35)
-* [3.4.2](#342)
-* [3.4.1](#341)
-* [3.4](#34)
-* [3.3](#33)
-* [3.2](#32)
-* [3.1](#31)
-* [3.0](#30)
-  * [Major changes](#major-changes-1)
-  * [Patch changes](#patch-changes-1)
-* [2.2](#22)
-* [2.1.1](#211)
-* [2.1](#21)
-* [2.0.1](#201)
-* [2.0](#20)
-  * [Major changes](#major-changes-2)
-  * [Minor changes](#minor-changes)
-* [1.0](#10)
-  * [Major changes](#major-changes-3)
-  * [Minor changes](#minor-changes-1)
-  * [Patch changes](#patch-changes-2)
-* [0.2.3](#023)
-* [0.2.2](#022)
-* [0.2.1](#021)
-* [0.2](#02)
-* [0.1.1](#011)
-* [0.1](#01)
+> Oct 29, 2024
+
+- fix: f64 glam interpolation support [d9a5b30](https://github.com/hadronized/splines/commit/d9a5b30)
+- Dependencies versions bumps.
 
 # ~4.3.2~ yanked
 
@@ -53,7 +14,6 @@
 > The next patch version should fix this. Sorry for the issue.
 
 - Switch from holding keys in `Vec` into `VecDeque`. [1b4fe44](https://github.com/hadronized/splines/commit/1b4fe44)
-
 
 # 4.3.1
 
